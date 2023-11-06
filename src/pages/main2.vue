@@ -22,7 +22,7 @@ import { Indicator } from 'mint-ui'
 export default {
     data () {
         return {
-            navs: ['推荐','视频','时尚','美妆','美食','运动','影音','旅行','居家','母婴'],
+            navs: ['Recommed','GALXE','EIP'],
             chooseItem: '',
             swiperOption: {
                 pagination: '.swiper-pagination',

@@ -22,11 +22,11 @@ export default new Router({
       path: '/',
       component: main2
     },
-    {
-      path: '/main1',
-      name: 'main1',
-      component: main1
-    },
+    //{
+    //  path: '/main1',
+    //  name: 'main1',
+    //  component: main1
+    //},
     {
       path: '/main2',
       name: 'main2',
@@ -58,11 +58,11 @@ export default new Router({
         }
       ]
     },
-    {
-      path: '/main3',
-      name: 'main3',
-      component: main3
-    },
+    //{
+    //  path: '/main3',
+    //  name: 'main3',
+    //  component: main3
+    //},
     {
       path: '/goods',
       name: 'goods',
