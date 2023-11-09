@@ -22,7 +22,7 @@ import { Indicator } from 'mint-ui'
 export default {
     data () {
         return {
-            navs: ['Recommed','GALXE','EIP'],
+            navs: ['ALL','GALXE','EIP'],
             chooseItem: '',
             swiperOption: {
                 pagination: '.swiper-pagination',

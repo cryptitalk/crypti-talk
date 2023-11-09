@@ -10,7 +10,7 @@
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{item.desc}}</p>
+                                    <p>{{item.short_desc}}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -34,7 +34,7 @@
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{item.desc}}</p>
+                                    <p>{{item.short_desc}}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -83,17 +83,18 @@ export default {
         }
     },
     created () {
-        // axios.get('/discoveryList')
-        //         .then(res => {
-        //             this.$store.dispatch('getDiscoverys',res.data)
-        //             this.$nextTick( () => {
-        //                 this._initScroll()
-        //             })
-        //         })
-        this.$store.dispatch('getDiscoverys',response.discoveryList)
-        setTimeout(() => {
-            this._initScroll()
-        },2000)
+         axios.get('/recomm')
+                 .then(res => {
+                     console.log(res)
+                     this.$store.dispatch('getDiscoverys',res.data.discoveryList)
+                     this.$nextTick( () => {
+                         this._initScroll()
+                     })
+                 })
+        //this.$store.dispatch('getDiscoverys',response.discoveryList)
+        //setTimeout(() => {
+        //    this._initScroll()
+        //},2000)
     }
 }
 </script>
