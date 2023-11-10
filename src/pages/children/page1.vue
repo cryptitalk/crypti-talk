@@ -74,6 +74,7 @@ export default {
     },
     methods: {
         selectedNote(item) {
+            lastScrollY = this.pageScroll.y;
             this.$store.dispatch('getNote', item)
             this.$router.push('/note')
         },
@@ -93,6 +94,12 @@ export default {
                     this.loadMoreData();
                 }
             });
+        },
+
+        restoreScrollPosition() {
+            if (this.pageScroll) {
+                this.pageScroll.scrollTo(0, lastScrollY);
+            }
         },
 
         refreshData() {
@@ -129,7 +136,8 @@ export default {
                     isInitiated = true
                 }
                 this.$nextTick(() => {
-                    this._initScroll()
+                    this._initScroll();
+                    this.restoreScrollPosition();
                 })
             })
     }
