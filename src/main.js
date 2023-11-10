@@ -15,6 +15,7 @@ Vue.use(VueTouch,{name: 'v-touch'})
 axios.defaults.baseURL = 'https://byzql.nas.cpolar.cn/'   //加前缀
 //axios.defaults.withCredentials = true   //允许跨域
 global.axios = axios    //全局化
+global.isInitiated = false
 
 Vue.config.productionTip = false
 

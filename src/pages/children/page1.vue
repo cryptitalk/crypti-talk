@@ -4,22 +4,22 @@
             <div class="dis-list">
                 <div class="left-list">
                     <ul>
-                        <li v-for="(item,index) in leftDisList" @click="selectedNote(item)" :key="index">
+                        <li v-for="(item, index) in leftDisList" @click="selectedNote(item)" :key="index">
                             <div class="note_item">
                                 <a class="img">
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{item.short_desc}}</p>
+                                    <p>{{ item.short_desc }}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
                                         <img v-lazy="item.avator" alt="">
-                                        <span>{{item.uname}}</span>
+                                        <span>{{ item.uname }}</span>
                                     </a>
                                     <a class="like">
                                         <img src="../../assets/like.png" alt="like">
-                                        <span>{{item.like}}</span>
+                                        <span>{{ item.like }}</span>
                                     </a>
                                 </div>
                             </div>
@@ -28,22 +28,22 @@
                 </div>
                 <div class="right-list">
                     <ul>
-                        <li v-for="(item,index) in rightDisList" @click="selectedNote(item)" :key="index">
+                        <li v-for="(item, index) in rightDisList" @click="selectedNote(item)" :key="index">
                             <div class="note_item">
                                 <a class="img">
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{item.short_desc}}</p>
+                                    <p>{{ item.short_desc }}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
                                         <img v-lazy="item.avator" alt="">
-                                        <span>{{item.uname}}</span>
+                                        <span>{{ item.uname }}</span>
                                     </a>
                                     <a class="like">
                                         <img src="../../assets/like.png" alt="like">
-                                        <span>{{item.like}}</span>
+                                        <span>{{ item.like }}</span>
                                     </a>
                                 </div>
                             </div>
@@ -59,42 +59,79 @@ import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
 const response = require('../../common/disgoods.json')
 export default {
-    data () {
+    data() {
         return {
-            selecteddis: {}
+            selecteddis: {},
+            isLoadingMoreData: false, // Flag to indicate if more data is being loaded
+            isInitiated: false,
         }
     },
-     computed: {
+    computed: {
         ...mapGetters([
             'leftDisList',
             'rightDisList'
         ])
     },
     methods: {
-        selectedNote (item) {
-            this.$store.dispatch('getNote',item)
+        selectedNote(item) {
+            this.$store.dispatch('getNote', item)
             this.$router.push('/note')
         },
-        _initScroll () {
+        _initScroll() {
             this.pageScroll = new BScroll(this.$refs.disWrapper, {
-                click: true
-            })
-            // console.log(this.pageScroll)
-        }
+                click: true,
+                probeType: 3 // Enable listening to the scroll event
+            });
+
+            this.pageScroll.on('scroll', (position) => {
+                if (position.y === 0) {
+                    // Scrolled to the top
+                    this.refreshData();
+                }
+                else if (!this.isLoadingMoreData && position.y <= this.pageScroll.maxScrollY) {
+                    this.isLoadingMoreData = true; // Set flag to true to indicate loading has started
+                    this.loadMoreData();
+                }
+            });
+        },
+
+        refreshData() {
+            // Logic to refresh data when scrolled to the top
+            console.log("Refreshing data...");
+            // Implement your data refreshing logic here
+            axios.get('/recomm').then(res => {
+                // Update the Vuex store with the new data
+                this.$store.dispatch('getDiscoverys', res.data.discoveryList);
+            }).catch(error => {
+                console.error("Error refreshing data:", error);
+            });
+        },
+
+        loadMoreData() {
+            // Implement data loading logic here
+            // After data is loaded, reset the isLoadingMoreData flag
+            console.log("Loading more data...");
+            // Example: Simulate an async data loading process
+            axios.get(`/recomm`).then(res => {
+                this.$store.dispatch('appendDiscovery', res.data.discoveryList);
+                this.isLoadingMoreData = false; // Reset flag
+            }).catch(error => {
+                console.error("Error loading more data:", error);
+                this.isLoadingMoreData = false; // Reset flag in case of error
+            });
+        },
     },
-    created () {
-         axios.get('/recomm')
-                 .then(res => {
-                     console.log(res)
-                     this.$store.dispatch('getDiscoverys',res.data.discoveryList)
-                     this.$nextTick( () => {
-                         this._initScroll()
-                     })
-                 })
-        //this.$store.dispatch('getDiscoverys',response.discoveryList)
-        //setTimeout(() => {
-        //    this._initScroll()
-        //},2000)
+    created() {
+        axios.get('/recomm')
+            .then(res => {
+                if (!isInitiated) {
+                    this.$store.dispatch('getDiscoverys', res.data.discoveryList)
+                    isInitiated = true
+                }
+                this.$nextTick(() => {
+                    this._initScroll()
+                })
+            })
     }
 }
 </script>
@@ -102,8 +139,8 @@ export default {
 .discovery
     width 100%
     height 100%
-    top 4.0rem
-    bottom 0
+    top 0rem
+    bottom 5.0rem
     overflow hidden
     position absolute
     background #f5f8fa

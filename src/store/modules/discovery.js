@@ -26,6 +26,9 @@ const actions = {
     getDiscoverys({ commit }, data) {
         commit(types.INITDISDATA, { data })
     },
+    appendDiscovery({ commit }, newData) {
+        commit(types.APPENDDISDATA, newData);
+    },
     getNote ({ commit }, value) {
         commit(types.GETNOTE,{ value })
     }
@@ -34,6 +37,9 @@ const mutations = {
     [types.INITDISDATA] (state, { data }) {
         // console.log(data)
         state.all = data
+    },
+    [types.APPENDDISDATA](state, newData) {
+        state.all.push(...newData);
     },
     [types.GETNOTE] (state, { value }) {
         state.choosedNote = value
