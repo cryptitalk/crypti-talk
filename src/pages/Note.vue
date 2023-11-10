@@ -5,7 +5,7 @@
         <div class="note_con">
           <div class="note_pic">
             <swiper :options="swiperOption" class="swiper-box">
-              <swiper-slide class="swiper-item" v-for="(img,index) in note.imgs" :key="index">
+              <swiper-slide class="swiper-item" v-for="(img, index) in note.imgs" :key="index">
                 <img v-lazy="img" alt="">
               </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -23,22 +23,31 @@
         <div class="note_header">
           <div class="n_user">
             <img :src="note.avator" alt="">
-            <div>{{note.uname}}</div>
+            <div>{{ note.uname }}</div>
           </div>
           <div class="btn">
             <button>＋ follow</button>
           </div>
         </div>
-        <div class="n_desc">
-          {{note.desc}}
+        <!-- <div class="n_desc"> -->
+        <div class="n_desc" v-html="linkedDescription"></div>
+        <a :href="note.alias ? `https://galxe.com/${note.alias}` : 'https://galxe.com/'" target="_blank"
+          rel="noopener noreferrer" class="common-style">
+          Galxe
+        </a>
+        <div v-if="parsedLinks">
+          <a v-for="(url, name) in parsedLinks" :key="name" :href="formatUrl(url)" target="_blank"
+            rel="noopener noreferrer" class="common-style">
+            {{ name }}
+          </a>
         </div>
         <div class="note_footer">
           <div class="adr">
-            categories {{note.adress}}
+            categories {{ note.adress }}
           </div>
           <div class="det">
-            <span class="d_time">{{note.time}}</span>
-            <span class="d_cl">{{note.collect}} collects {{note.like}}likes</span>
+            <span class="d_time">{{ note.time }}</span>
+            <span class="d_cl">{{ note.collect }} collects {{ note.like }}likes</span>
           </div>
         </div>
       </div>
@@ -62,38 +71,62 @@ export default {
   computed: {
     ...mapGetters([
       'note'
-    ])
+    ]),
+    linkedDescription() {
+      if (!this.note.desc) return '';
+      // A basic regex pattern to match URLs (you may want to use a more robust pattern or library)
+      const urlPattern = /(\bhttps?:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+      return this.note.desc.replace(urlPattern, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
+    },
+    parsedLinks() {
+      try {
+        return JSON.parse(this.note.links);
+      } catch (e) {
+        // Handle the error if JSON is not parsable
+        console.error('Failed to parse links:', e);
+        return null;
+      }
+    }
   },
   methods: {
-    hideNote () {
+    hideNote() {
       this.$router.push('/')
     },
-    _initScroll () {
+    _initScroll() {
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
         click: true,
         probeType: true
       })
+    },
+    formatUrl(url) {
+      // A simple method to ensure that URLs have a protocol part
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return `http://${url}`;
+      }
+      return url;
     }
   },
   components: {
     swiper,
     swiperSlide
   },
-  created () {
+  created() {
     if (this.$store.state.isNav) {
-        	this.$store.dispatch('isNav')
+      this.$store.dispatch('isNav')
     }
-    this.$nextTick( () => {
-        this._initScroll()
+    this.$nextTick(() => {
+      this._initScroll()
     })
   },
   watch: {
-		'$route' () {
-			if (this.$store.state.isNav) {
-        		this.$store.dispatch('isNav')
-      		}
-		}
-	}
+    '$route'() {
+      if (this.$store.state.isNav) {
+        this.$store.dispatch('isNav')
+      }
+    }
+  }
 }
 </script>
 <style scoped>
@@ -199,6 +232,22 @@ export default {
   font-size: 0.37rem;
   border: 1px solid #ff2741;
   background-color: #fff;
+}
+
+.common-style {
+  font-size: 0.42rem;
+  line-height: 0.56rem;
+  padding: 0.37rem;
+  color: #0000EE;
+  text-decoration: none; /* This removes the underline from links */
+  display: inline-block; /* To properly apply padding and allow for :hover styles */
+  cursor: pointer; /* To explicitly show that the element is clickable */
+}
+
+/* Optional: Add hover effect to indicate the link is clickable */
+.common-style:hover {
+  text-decoration: underline; /* Or any other effect you want on hover */
+  color: #000000; /* Optional: Change color on hover */
 }
 
 .n_desc {

@@ -1,4 +1,5 @@
 <template>
+<!--
     <div class="main2_nav">
         <div class="m2_header">
             <swiper :options="swiperOption" class="swiper-box">
@@ -10,6 +11,7 @@
                 <div class="swiper-pagination" slot="pagination"></div>
             </swiper>
         </div>
+-->
         <div class="m2_content">
             <router-view></router-view>
         </div>
@@ -52,37 +54,47 @@ export default {
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
-.main2_nav
-    width 100%
-    .m2_header
-        width 100%
-        height 0.98rem
-        padding-top 0.24rem
-        background #f5f8fa
-        a
-            color grey
-            text-decoration none
-        a:visited
-            color grey
-        .swiper-box
-            padding-left 0.24rem
-            padding-right 0.24rem
-            .swiper-wrapper
-                .swiper-slide
-                    .opt-item
-                        height 0.69rem
-                        line-height 0.69rem
-                        text-align center
-                        border-radius 25px
-                        font-size 0.46rem
-                        color #999999
-                        background #fff
-                        // border 1px solid grey
-                    .isActive
-                        color #333333
-                        // border 1px solid black
-            .swiper-pagination
-                display none
+.main2_nav {
+    width: 100%;
+    .m2_header {
+        width: 100%;
+        height: 0.98rem; /* Adjusted if needed */
+        padding-top: 0.24rem;
+        background: #f5f8fa;
+        a {
+            color: grey;
+            text-decoration: none;
+        }
+        a:visited {
+            color: grey;
+        }
+        .swiper-box {
+            padding-left: 0.24rem;
+            padding-right: 0.24rem;
+            .swiper-wrapper {
+                .swiper-slide {
+                    .opt-item {
+                        /* height: 0.69rem; You might not need to set a height */
+                        line-height: 0.5rem; /* Adjust line-height as needed to fit the text */
+                        text-align: center;
+                        border-radius: 25px;
+                        font-size: 0.46rem;
+                        color: #999999;
+                        background: #fff;
+                        /* border: 1px solid grey; */
+                    }
+                    .isActive {
+                        color: #333333;
+                        /* border: 1px solid black; */
+                    }
+                }
+            }
+            .swiper-pagination {
+                display: none;
+            }
+        }
+    }
+}
         
 </style>
 
