@@ -95,10 +95,13 @@ export default {
                 }
             });
         },
-
         restoreScrollPosition() {
             if (this.pageScroll) {
+                this.$nextTick(() => {
                 this.pageScroll.scrollTo(0, lastScrollY);
+                this.pageScroll.refresh();
+                this.$Lazyload.lazyLoadHandler();
+            });
             }
         },
 
