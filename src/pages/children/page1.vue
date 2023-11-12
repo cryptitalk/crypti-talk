@@ -10,7 +10,7 @@
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{ item.short_desc }}</p>
+                                    <p>{{ item.short_desc | truncate(20) }}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -63,6 +63,7 @@ export default {
         return {
             selecteddis: {},
             isLoadingMoreData: false, // Flag to indicate if more data is being loaded
+            isRefreshData: false, // Flag to indicate if more data is being loaded
             isInitiated: false,
         }
     },
@@ -76,17 +77,27 @@ export default {
         selectedNote(item) {
             lastScrollY = this.pageScroll.y;
             this.$store.dispatch('getNote', item)
+            this.addItemToQueue(item.id)
             this.$router.push('/note')
+        },
+        addItemToQueue(item) {
+            this.$updateQueue(item);
+            console.log(this.$queue);
+        },
+        getQueueAsString() {
+            return this.$queueToString();
         },
         _initScroll() {
             this.pageScroll = new BScroll(this.$refs.disWrapper, {
                 click: true,
+                mouseWheel: true,
                 probeType: 3 // Enable listening to the scroll event
             });
 
             this.pageScroll.on('scroll', (position) => {
-                if (position.y === 0) {
+                if (!this.isRefreshData && position.y === 0) {
                     // Scrolled to the top
+                    this.isRefreshData = true
                     this.refreshData();
                 }
                 else if (!this.isLoadingMoreData && position.y <= this.pageScroll.maxScrollY) {
@@ -98,10 +109,10 @@ export default {
         restoreScrollPosition() {
             if (this.pageScroll) {
                 this.$nextTick(() => {
-                this.pageScroll.scrollTo(0, lastScrollY);
-                this.pageScroll.refresh();
-                this.$Lazyload.lazyLoadHandler();
-            });
+                    this.pageScroll.scrollTo(0, lastScrollY);
+                    this.pageScroll.refresh();
+                    this.$Lazyload.lazyLoadHandler();
+                });
             }
         },
 
@@ -109,20 +120,20 @@ export default {
             // Logic to refresh data when scrolled to the top
             console.log("Refreshing data...");
             // Implement your data refreshing logic here
-            axios.get('/recomm').then(res => {
-                // Update the Vuex store with the new data
-                this.$store.dispatch('getDiscoverys', res.data.discoveryList);
+            var history = this.getQueueAsString();
+            axios.get(`/explore/${history}`).then(res => {
+                this.$store.dispatch('appendDiscovery', res.data.discoveryList);
+                this.isLoadingMoreData = false; // Reset flag
             }).catch(error => {
-                console.error("Error refreshing data:", error);
+                console.error("Error loading more data:", error);
+                this.isLoadingMoreData = false; // Reset flag in case of error
             });
         },
 
         loadMoreData() {
-            // Implement data loading logic here
-            // After data is loaded, reset the isLoadingMoreData flag
-            console.log("Loading more data...");
-            // Example: Simulate an async data loading process
-            axios.get(`/recomm`).then(res => {
+            var history = this.getQueueAsString();
+            console.log("Loading more data...", history);
+            axios.get(`/explore/${history}`).then(res => {
                 this.$store.dispatch('appendDiscovery', res.data.discoveryList);
                 this.isLoadingMoreData = false; // Reset flag
             }).catch(error => {
@@ -132,7 +143,8 @@ export default {
         },
     },
     created() {
-        axios.get('/recomm')
+        var history = this.getQueueAsString();
+        axios.get(`/explore/${history}`)
             .then(res => {
                 if (!isInitiated) {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)

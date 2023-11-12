@@ -18,6 +18,29 @@ global.axios = axios    //全局化
 global.isInitiated = false
 global.lastScrollY = 0
 
+Vue.filter('truncate', function (value, length) {
+  if (value.length <= length) {
+    return value;
+  }
+  return value.substring(0, length) + '...';
+});
+
+Vue.prototype.$queue = [];
+
+Vue.prototype.$updateQueue = function(item) {
+  this.$queue.push(item);
+  if (this.$queue.length > 4) {
+    this.$queue.shift(); // Remove the first (oldest) item
+  }
+};
+
+Vue.prototype.$queueToString = function() {
+  if (this.$queue.length === 0) {
+    return '0';
+  }
+  return this.$queue.join(',');
+};
+
 Vue.config.productionTip = false
 
 Vue.use(Mint);

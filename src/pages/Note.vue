@@ -82,17 +82,33 @@ export default {
     },
     parsedLinks() {
       try {
-        return JSON.parse(this.note.links);
+        const allLinks = JSON.parse(this.note.links);
+        const usefulLinks = {};
+
+        for (const key in allLinks) {
+          if (allLinks[key] && this.isValidUrl(allLinks[key])) {
+            usefulLinks[key] = allLinks[key];
+          }
+        }
+
+        return usefulLinks;
       } catch (e) {
-        // Handle the error if JSON is not parsable
         console.error('Failed to parse links:', e);
         return null;
       }
-    }
+    },
   },
   methods: {
     hideNote() {
       this.$router.push('/')
+    },
+    isValidUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
     },
     _initScroll() {
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
@@ -239,15 +255,20 @@ export default {
   line-height: 0.56rem;
   padding: 0.37rem;
   color: #0000EE;
-  text-decoration: none; /* This removes the underline from links */
-  display: inline-block; /* To properly apply padding and allow for :hover styles */
-  cursor: pointer; /* To explicitly show that the element is clickable */
+  text-decoration: none;
+  /* This removes the underline from links */
+  display: inline-block;
+  /* To properly apply padding and allow for :hover styles */
+  cursor: pointer;
+  /* To explicitly show that the element is clickable */
 }
 
 /* Optional: Add hover effect to indicate the link is clickable */
 .common-style:hover {
-  text-decoration: underline; /* Or any other effect you want on hover */
-  color: #000000; /* Optional: Change color on hover */
+  text-decoration: underline;
+  /* Or any other effect you want on hover */
+  color: #000000;
+  /* Optional: Change color on hover */
 }
 
 .n_desc {
