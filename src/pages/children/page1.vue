@@ -88,9 +88,10 @@ export default {
             return this.$queueToString();
         },
         _initScroll() {
+            const isMobile = this.isMobileDevice();
             this.pageScroll = new BScroll(this.$refs.disWrapper, {
                 click: true,
-                mouseWheel: true,
+                mouseWheel: !isMobile,
                 probeType: 3 // Enable listening to the scroll event
             });
 
@@ -105,6 +106,9 @@ export default {
                     this.loadMoreData();
                 }
             });
+        },
+        isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         },
         restoreScrollPosition() {
             if (this.pageScroll) {
@@ -122,11 +126,11 @@ export default {
             // Implement your data refreshing logic here
             var history = this.getQueueAsString();
             axios.get(`/explore/${history}`).then(res => {
-                this.$store.dispatch('appendDiscovery', res.data.discoveryList);
-                this.isLoadingMoreData = false; // Reset flag
+                this.$store.dispatch('getDiscoverys', res.data.discoveryList);
+                this.isRefreshData = false; // Reset flag
             }).catch(error => {
                 console.error("Error loading more data:", error);
-                this.isLoadingMoreData = false; // Reset flag in case of error
+                this.isRefreshData = false; // Reset flag in case of error
             });
         },
 
