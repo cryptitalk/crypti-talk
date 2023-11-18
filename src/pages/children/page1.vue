@@ -34,7 +34,7 @@
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{ item.short_desc }}</p>
+                                    <p>{{ item.short_desc | truncate(20) }}</p>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -163,83 +163,110 @@ export default {
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-.discovery
-    width 100%
-    height 100%
-    top 0rem
-    bottom 5.0rem
-    overflow hidden
-    position absolute
-    background #f5f8fa
-    .dis-list
-        width 100%
-        // min-height 150%
-        display flex
-        flex-direction row
-        background #f5f8fa
-        .left-list
-            margin-left 5px
-            flex 1
-        .right-list
-            margin-right 5px
-            flex 1
-        ul > li
-            width 96%
-            margin-left auto
-            margin-right auto
-            margin-top 5px
-            font-size 0.39rem
-            list-style none
-            .note_item
-                .img
-                    width 100%
-                    overflow hidden
-                    img
-                        width 100%
-                    img[lazy=loading]
-                        width 100%
-                .desc
-                    width 100%
-                    height 0.94rem
-                    p
-                        margin 0.26rem
-                        overflow hidden;
-                        text-overflow ellipsis
-                        display -webkit-box
-                        -webkit-line-clamp 2
-                        -webkit-box-orient vertical
-                .note
-                    height 0.63rem
-                    margin 0.22rem
-                    line-height 0.63rem
-                    display flex
-                    color #333333
-                    flex-direction row
-                    justify-content space-between
-                    .user
-                        display flex
-                        color #333333
-                        font-size 0.33rem
-                        flex-direction row
-                        img
-                            width 0.63rem
-                            height 0.63rem
-                            margin-right 0.13rem
-                            border-radius 50%
-                        img[lazy=loading]
-                            width 0.63rem
-                            height 0.63rem
-                            margin-right 0.13rem
-                            border-radius 50%
-                    .like
-                        line-height 0.63rem
-                        display flex
-                        color #999999
-                        flex-direction row
-                        img
-                            margin-top 0.13rem
-                            margin-right 0.11rem
-                            width 0.37rem
-                            height 0.37rem                  
+.discovery {
+    width: 100%;
+    height: 100%;
+    top: 0rem;
+    bottom: 5.0rem;
+    overflow: hidden;
+    position: absolute;
+    background: #f5f8fa;
+}
+
+.discovery .dis-list {
+    width: 100%;
+    /* min-height: 150%; Uncomment if needed */
+    display: flex;
+    flex-direction: row;
+    background: #f5f8fa;
+}
+
+.discovery .dis-list .left-list {
+    margin-left: 5px;
+    flex: 1;
+}
+
+.discovery .dis-list .right-list {
+    margin-right: 5px;
+    flex: 1;
+}
+
+.discovery .dis-list ul > li {
+    width: 96%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    font-size: 0.39rem;
+    list-style: none;
+}
+
+.discovery .dis-list ul > li .note_item {
+    /* Styles for .note_item */
+}
+
+.discovery .dis-list ul > li .note_item .img {
+    width: 100%; /* maintain full width of the container */
+    height: auto; /* adjust height automatically */
+    overflow: hidden;
+}
+
+.discovery .dis-list ul > li .note_item .img img,
+.discovery .dis-list ul > li .note_item .img img[lazy=loading] {
+    width: 100%; /* image will take full width of its container */
+    height: auto; /* adjust height automatically */
+    object-fit: contain; /* this will ensure the image is scaled properly */
+    overflow: hidden;
+}
+
+.discovery .dis-list ul > li .note_item .desc {
+    width: 100%;
+    height: 0.94rem;
+}
+
+.discovery .dis-list ul > li .note_item .desc p {
+    margin: 0.26rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.discovery .dis-list ul > li .note_item .note {
+    height: 0.63rem;
+    margin: 0.22rem;
+    line-height: 0.63rem;
+    display: flex;
+    color: #333333;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.discovery .dis-list ul > li .note_item .note .user,
+.discovery .dis-list ul > li .note_item .note .user img,
+.discovery .dis-list ul > li .note_item .note .user img[lazy=loading] {
+    display: flex;
+    color: #333333;
+    font-size: 0.33rem;
+    flex-direction: row;
+    width: 0.63rem;
+    height: 0.63rem;
+    margin-right: 0.13rem;
+    border-radius: 50%;
+}
+
+.discovery .dis-list ul > li .note_item .note .like {
+    line-height: 0.63rem;
+    display: flex;
+    color: #999999;
+    flex-direction: row;
+}
+
+.discovery .dis-list ul > li .note_item .note .like img {
+    margin-top: 0.13rem;
+    margin-right: 0.11rem;
+    width: 0.37rem;
+    height: 0.37rem;
+}              
 </style>
 
