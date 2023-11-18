@@ -13,7 +13,8 @@ Vue.use(VueTouch, { name: 'v-touch' })
 //axios.defaults.baseURL = 'http://host.docker.internal:5000/'   //加前缀
 //axios.defaults.baseURL = 'http://localhost:5000/'   //加前缀
 
-if (process.env.EXEC_ENV === 'production') {
+console.log(process.env.NODE_ENV)
+if (process.env.NODE_ENV === 'production') {
   axios.defaults.baseURL = 'https://main-wjaxre4ena-uc.a.run.app/';   // Set base URL
   global.axios = axios;    // Globalize axios
   console.log("in production");

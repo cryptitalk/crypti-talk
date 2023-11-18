@@ -8,6 +8,7 @@
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
+    "stg": "node build/build-stg.js",
     "server": "json-server src/common/disgoods.json",
     "serverdev": "npm run server & npm run dev "
   },
