@@ -31,7 +31,7 @@
       <div class="search">
           <div class="search-input">
             <img src="../assets/search.png" />
-            <input type="text" placeholder="搜索笔记、商品和用户" @focus="focus()">
+            <input type="text" placeholder="Search the web3 world" @focus="focus()">
           </div>
       </div>
     </div>
@@ -46,7 +46,7 @@ export default {
     }
   },
   methods: {
-    focus () {    //搜索框聚焦则跳转到搜索页面
+    focus () {
       this.$router.push('/search')
     }
   },

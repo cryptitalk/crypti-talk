@@ -50,6 +50,10 @@ Vue.prototype.$queueToString = function () {
   return this.$queue.join(',');
 };
 
+Vue.prototype.$purgeQueue = function () {
+  this.$queue = []; // Reset the queue to an empty array
+};
+
 Vue.config.productionTip = false
 
 Vue.use(Mint);

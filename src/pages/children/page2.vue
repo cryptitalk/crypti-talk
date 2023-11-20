@@ -136,7 +136,7 @@ export default {
       });
     },
   },
-  created() {
+  created() {   
     var history = this.getQueueAsString();
     axios.get(`/explore/${history}`)
       .then(res => {
