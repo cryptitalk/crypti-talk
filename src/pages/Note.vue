@@ -294,4 +294,14 @@ export default {
   flex-direction: row;
   justify-content: space-between;
 }
+
+@media (min-width: 1024px) { /* Adjust this breakpoint as needed */
+  .note_page {
+    width: 100%; /* Set width to 50% for desktop screens */
+    max-width: 1024px;
+    left: 50%; /* Position 50% from the left of the screen */
+    transform: translateX(-50%); /* Shift the element to the left by half its own width */
+    position: absolute; /* Ensure the element is positioned absolutely */
+  }
+}
 </style>

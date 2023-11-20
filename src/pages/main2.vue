@@ -42,14 +42,24 @@ export default {
              index = index + 1
              this.$router.push('/main2/page' + index)
              setTimeout(() => Indicator.close(), 1000)
-         }
+         },
+         isDesktopDevice() {
+            // Simple check for desktop using window.innerWidth
+            // You may enhance this check as needed
+            console.log("check device type", window.innerWidth)
+            return window.innerWidth >= 1024;
+        }
     },
     components: {
         swiper,
         swiperSlide
     },
     created() {
-        this.$router.push('/main2/page1')
+        if (this.isDesktopDevice()) {
+            this.$router.push('/main2/page2'); // Navigate to page2 for desktop
+        } else {
+            this.$router.push('/main2/page1'); // Navigate to page1 for mobile
+        }
     }
 }
 </script>

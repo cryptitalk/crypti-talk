@@ -1,0 +1,47 @@
+import * as types from '../mutation-types'
+
+const state = {
+    all: [],
+    choosedNote: []
+}
+
+const getters = {
+    // Create five getters for five different lists
+    list1: state => state.all.filter((item, index) => index % 5 === 0),
+    list2: state => state.all.filter((item, index) => index % 5 === 1),
+    list3: state => state.all.filter((item, index) => index % 5 === 2),
+    list4: state => state.all.filter((item, index) => index % 5 === 3),
+    list5: state => state.all.filter((item, index) => index % 5 === 4),
+    note: state => state.choosedNote
+}
+
+const actions = {
+    getDiscoverys5({ commit }, data) {
+        commit(types.INITDISDATA, { data })
+    },
+    appendDiscovery5({ commit }, newData) {
+        commit(types.APPENDDISDATA, newData);
+    },
+    getNote5 ({ commit }, value) {
+        commit(types.GETNOTE,{ value })
+    }
+}
+
+const mutations = {
+    [types.INITDISDATA] (state, { data }) {
+        state.all = data
+    },
+    [types.APPENDDISDATA](state, newData) {
+        state.all.push(...newData);
+    },
+    [types.GETNOTE] (state, { value }) {
+        state.choosedNote = value
+    }
+}
+
+export default {
+    state,
+    getters,
+    actions,
+    mutations,
+}

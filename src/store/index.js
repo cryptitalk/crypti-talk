@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import discovery from './modules/discovery'
+import discovery5 from './modules/discovery5'
 import goods from './modules/goods'
 import cart from './modules/cart'
 import * as getters from './getters'
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     state,
     modules: {
         discovery,
+        discovery5,
         goods,
         cart
     },

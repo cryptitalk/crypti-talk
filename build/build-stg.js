@@ -10,8 +10,6 @@ var webpack = require('webpack')
 var config = require('../config')
 var webpackConfig = require('./webpack.dev.conf')
 
-process.env.NODE_ENV = 'stg'
-
 var spinner = ora('building for production...')
 spinner.start()
 
