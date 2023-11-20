@@ -158,7 +158,7 @@ export default {
   width: 100%;
   max-width: 1024px;
   height: 100%;
-  top: 0rem;
+  top: 1.5rem;
   bottom: 5.0rem;
   overflow: hidden;
   position: absolute;

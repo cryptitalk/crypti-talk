@@ -166,7 +166,7 @@ export default {
 .discovery {
     width: 100%;
     height: 100%;
-    top: 0rem;
+    top: 1.5rem;
     bottom: 5.0rem;
     overflow: hidden;
     position: absolute;
