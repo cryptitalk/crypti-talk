@@ -136,8 +136,13 @@ export default {
       });
     },
   },
-  created() {   
+  created() {
     var history = this.getQueueAsString();
+    console.log("history is: ", history)
+    var historyArray = history.split(',');
+    if (historyArray.length > 0 && historyArray[0] === 'search') {
+      isInitiated = false;
+    }
     axios.get(`/explore/${history}`)
       .then(res => {
         if (!isInitiated) {

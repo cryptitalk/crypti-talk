@@ -33,6 +33,7 @@ export default {
                 return /Mobi|Android|iPhone/i.test(navigator.userAgent);
             }
             this.$purgeQueue();
+            this.$updateQueue("search");
             this.$updateQueue(key);
             // Navigate to page1 if on mobile, else navigate to page2
             if (isMobile()) {
