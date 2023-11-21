@@ -24,6 +24,9 @@ const actions = {
     },
     getNote5 ({ commit }, value) {
         commit(types.GETNOTE,{ value })
+    },
+    clearData5({ commit }) {
+        commit(types.CLEARDISDATA);
     }
 }
 
@@ -36,6 +39,10 @@ const mutations = {
     },
     [types.GETNOTE] (state, { value }) {
         state.choosedNote = value
+    },
+    [types.CLEARDISDATA](state) {
+        state.all = [];
+        state.choosedNote = [];
     }
 }
 

@@ -3,6 +3,7 @@ export const ADD_TO_CART = 'ADD_TO_CART'
 export const ISNAV = 'ISNAV'
 export const INITDISDATA = 'INITDISDATA'
 export const APPENDDISDATA = 'APPENDDISDATA'
+export const CLEARDISDATA = 'CLEARDISDATA';
 export const INITGOODSDATA = 'INITGOODSDATA'
 export const GETGOODS = 'GETGOODS'
 export const GETNOTE = 'GETNOTE'

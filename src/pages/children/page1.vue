@@ -128,6 +128,7 @@ export default {
             axios.get(`/explore/${history}`).then(res => {
                 this.$store.dispatch('getDiscoverys', res.data.discoveryList);
                 this.isRefreshData = false; // Reset flag
+                this.$purgeQueue();
             }).catch(error => {
                 console.error("Error loading more data:", error);
                 this.isRefreshData = false; // Reset flag in case of error
@@ -140,6 +141,7 @@ export default {
             axios.get(`/explore/${history}`).then(res => {
                 this.$store.dispatch('appendDiscovery', res.data.discoveryList);
                 this.isLoadingMoreData = false; // Reset flag
+                this.$purgeQueue();
             }).catch(error => {
                 console.error("Error loading more data:", error);
                 this.isLoadingMoreData = false; // Reset flag in case of error
@@ -148,11 +150,17 @@ export default {
     },
     created() {
         var history = this.getQueueAsString();
+        var historyArray = history.split(',');
+        if (historyArray.length > 0 && historyArray[0] === 'search') {
+            this.$store.dispatch('clearData');
+            isInitiated = false;
+        }
         axios.get(`/explore/${history}`)
             .then(res => {
                 if (!isInitiated) {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)
                     isInitiated = true
+                    this.$purgeQueue();
                 }
                 this.$nextTick(() => {
                     this._initScroll();

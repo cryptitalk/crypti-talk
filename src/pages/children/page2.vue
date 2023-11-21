@@ -130,6 +130,7 @@ export default {
       axios.get(`/explore/${history}`).then(res => {
         this.$store.dispatch('appendDiscovery5', res.data.discoveryList);
         this.isLoadingMoreData = false; // Reset flag
+        this.$purgeQueue();
       }).catch(error => {
         console.error("Error loading more data:", error);
         this.isLoadingMoreData = false; // Reset flag in case of error
@@ -141,6 +142,7 @@ export default {
     console.log("history is: ", history)
     var historyArray = history.split(',');
     if (historyArray.length > 0 && historyArray[0] === 'search') {
+      this.$store.dispatch('clearData5');
       isInitiated = false;
     }
     axios.get(`/explore/${history}`)
@@ -148,6 +150,7 @@ export default {
         if (!isInitiated) {
           this.$store.dispatch('getDiscoverys5', res.data.discoveryList)
           isInitiated = true
+          this.$purgeQueue();
         }
         this.$nextTick(() => {
           this._initScroll();
