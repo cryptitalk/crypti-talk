@@ -77,7 +77,7 @@ export default {
         ]),
         isLoading() {
             console.log("check isloading")
-            return this.isLoadingMoreData || this.isRefreshData;
+            return !this.isInitiated && this.isRefreshData;
         }
     },
     methods: {

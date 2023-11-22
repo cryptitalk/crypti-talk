@@ -110,9 +110,14 @@ export default {
         return false;
       }
     },
+    isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        },
     _initScroll() {
+      const isMobile = this.isMobileDevice();
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
         click: true,
+        mouseWheel: !isMobile,
         probeType: true
       })
     },

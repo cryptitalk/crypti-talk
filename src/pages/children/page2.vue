@@ -56,7 +56,7 @@ export default {
     ]),
     isLoading() {
             console.log("check isloading")
-            return this.isLoadingMoreData || this.isRefreshData;
+            return !this.isInitiated && this.isRefreshData;
         }
   },
   methods: {
@@ -94,8 +94,8 @@ export default {
       this.pageScroll.on('scroll', (position) => {
         if (!this.isRefreshData && position.y === 0) {
           // Scrolled to the top
-          this.isRefreshData = true
-          this.refreshData();
+          //this.isRefreshData = true
+          //this.refreshData();
         }
         else if (!this.isLoadingMoreData && position.y <= this.pageScroll.maxScrollY) {
           this.isLoadingMoreData = true; // Set flag to true to indicate loading has started

@@ -1,20 +1,17 @@
 <template>
     <div id="search">
-        <div class="search">
-            <template>
-                <!-- ... other parts of your template ... -->
-                <div class="search-input">
-                    <img src="../assets/search.png" />
-                    <form @submit.prevent="search(key)">
-                        <input type="text" v-model="key">
-                    </form>
-                </div>
+        <div class="search-container">
+            <div class="search-bar">
+                <img src="../assets/search.png" class="search-icon" />
+                <form @submit.prevent="search(key)" class="search-form">
+                    <input type="text" v-model="key" placeholder="Search...">
+                </form>
                 <div class="search-cancel" @touchend="search(key)" @click="search(key)">
-                    search
+                    Search
                 </div>
-                <!-- ... other parts of your template ... -->
-            </template>
+            </div>
         </div>
+        <!-- ... other parts of your template ... -->
     </div>
 </template>
 <script>
@@ -63,78 +60,74 @@ export default {
 <style scoped>
 /* Styles for the main container */
 #search {
+    width: 100%;
     display: flex;
     justify-content: center;
-    /* Center horizontally */
-    align-items: center;
-    /* Center vertically */
-    height: 100vh;
-    /* Full height of the viewport */
+    padding-top: 20px; /* Adjust as needed for spacing from the top */
 }
 
 /* Styles for the search bar container */
-.search {
+.search-container {
     width: 100%;
-    max-width: 600px;
-    height: 120px;
-    /* Double the original height */
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
+    max-width: 600px; /* Adjust for desired width */
 }
 
-/* Updated styles for the search input */
-.search-input {
-    width: 90%;
+/* Styles for the search bar */
+.search-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: #f5f8fa;
-    border-radius: 5px;
+    border-radius: 25px;
+    padding: 10px;
+    width: 100%; /* Ensure full width */
+}
+
+/* Styles for the form within the search bar */
+.search-form {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+    flex-grow: 1; /* Ensure form takes available space */
+    margin: 0; /* Remove any default margin */
 }
 
-.search-input img {
-    height: 60px;
-    /* Adjusted to match the new height of the search bar */
-    width: 60px;
-    display: inline-block;
-    margin: 0 5px;
-}
-
-/* Updated styles for the form and input within the search input */
-.search-input form,
-.search-input input {
-    width: 100%;
-    height: 100%;
+/* Styles for the input within the search form */
+.search-form input {
+    width: 100%; /* Ensure full width */
     border: none;
-    background: #f5f8fa;
-    font-size: 32px;
-    /* Double the original font size */
-    flex-grow: 1;
-    border-radius: 5px;
+    background: transparent;
     outline: none;
+    font-size: 16px;
+    color: #333;
+    padding: 10px 15px; /* Adjust padding to match search bar */
+    border-radius: 20px; /* Slight rounding to match search bar */
 }
 
-/* Adjust the cancel button as well to match the new height */
+.search-form input::placeholder {
+    color: #999;
+}
+
+/* Adjustments for search icon and cancel button for consistency */
+.search-icon {
+    height: 30px;
+    width: 30px;
+    margin-right: 10px; /* Adjust spacing */
+}
+
 .search-cancel {
-    height: 120px;
-    /* Assuming you've doubled the height of the search bar */
-    width: 110px;
-    line-height: 120px;
-    overflow: hidden;
-    transition: width 0.3s;
+    background: #3498db;
+    color: white;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
     cursor: pointer;
-    font-size: 32px;
-    /* Double the assumed original font size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    /* To ensure the text is centered if it's not already */
 }
 
 @media screen and (min-width: 1024px) {
-    .search {
+    .search-container {
         max-width: 1024px;
     }
 }
