@@ -1,6 +1,9 @@
 <template>
   <div class="discovery_page">
-    <div class="discovery" ref="disWrapper">
+    <div v-if="isLoading" class="loading-indicator">
+            <div class="spinner"></div>
+        </div>
+    <div v-else class="discovery" ref="disWrapper">
       <div class="dis-list-five-columns">
         <div v-for="column in 5" :key="column" class="column">
           <ul>
@@ -50,7 +53,11 @@ export default {
       'list3',
       'list4',
       'list5'
-    ])
+    ]),
+    isLoading() {
+            console.log("check isloading")
+            return this.isLoadingMoreData || this.isRefreshData;
+        }
   },
   methods: {
     selectedNote(item) {
@@ -144,12 +151,14 @@ export default {
     if (historyArray.length > 0 && historyArray[0] === 'search') {
       this.$store.dispatch('clearData5');
       isInitiated = false;
+      this.isRefreshData = true
     }
     axios.get(`/explore/${history}`)
       .then(res => {
         if (!isInitiated) {
           this.$store.dispatch('getDiscoverys5', res.data.discoveryList)
           isInitiated = true
+          this.isRefreshData = false
           this.$purgeQueue();
         }
         this.$nextTick(() => {
@@ -173,6 +182,27 @@ export default {
   background: #f5f8fa;
   left: 50%; /* Positioned 50% from the left of the screen */
   transform: translateX(-50%); /* Shifts the element to the left by half its own width */
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Adjust as needed */
+  font-size: 1.2rem;
+}
+
+.spinner {
+  border: 5px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+  border-top: 5px solid #3498db; /* Blue color for the spinner */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .discovery .dis-list-five-columns {

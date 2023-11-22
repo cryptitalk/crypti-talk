@@ -1,6 +1,9 @@
 <template>
     <div class="discovery_page">
-        <div class="discovery" ref="disWrapper">
+        <div v-if="isLoading" class="loading-indicator">
+            <div class="spinner"></div>
+        </div>
+        <div v-else class="discovery" ref="disWrapper">
             <div class="dis-list">
                 <div class="left-list">
                     <ul>
@@ -71,7 +74,11 @@ export default {
         ...mapGetters([
             'leftDisList',
             'rightDisList'
-        ])
+        ]),
+        isLoading() {
+            console.log("check isloading")
+            return this.isLoadingMoreData || this.isRefreshData;
+        }
     },
     methods: {
         selectedNote(item) {
@@ -153,6 +160,7 @@ export default {
         var historyArray = history.split(',');
         if (historyArray.length > 0 && historyArray[0] === 'search') {
             this.$store.dispatch('clearData');
+            this.isRefreshData = true
             isInitiated = false;
         }
         axios.get(`/explore/${history}`)
@@ -160,6 +168,7 @@ export default {
                 if (!isInitiated) {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)
                     isInitiated = true
+                    this.isRefreshData = false
                     this.$purgeQueue();
                 }
                 this.$nextTick(() => {
@@ -171,6 +180,27 @@ export default {
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust as needed */
+    font-size: 1.2rem;
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+    border-top: 5px solid #3498db; /* Blue color for the spinner */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 .discovery {
     width: 100%;
     height: 100%;
