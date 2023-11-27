@@ -12,7 +12,7 @@ const getters = {
     list3: state => state.all.filter((item, index) => index % 5 === 2),
     list4: state => state.all.filter((item, index) => index % 5 === 3),
     list5: state => state.all.filter((item, index) => index % 5 === 4),
-    note: state => state.choosedNote
+    note5: state => state.choosedNote
 }
 
 const actions = {
