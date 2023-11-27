@@ -1,8 +1,8 @@
 <template>
   <div class="discovery_page">
     <div v-if="isLoading" class="loading-indicator">
-            <div class="spinner"></div>
-        </div>
+      <div class="spinner"></div>
+    </div>
     <div v-else class="discovery" ref="disWrapper">
       <div class="dis-list-five-columns">
         <div v-for="column in 5" :key="column" class="column">
@@ -55,9 +55,9 @@ export default {
       'list5'
     ]),
     isLoading() {
-            console.log("check isloading")
-            return !this.isInitiated && this.isRefreshData;
-        }
+      console.log("check isloading")
+      return !this.isInitiated && this.isRefreshData;
+    }
   },
   methods: {
     selectedNote(item) {
@@ -115,7 +115,22 @@ export default {
         });
       }
     },
-
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    },
+    getAuthConfig() {
+      const loginInfo = this.getCookie('logged-in:' + global.connectedAccount);
+      const config = {};
+      if (loginInfo) {
+        config.headers = {
+          Authorization: global.connectedAccount + ":" + loginInfo
+        };
+      }
+      return config
+    },
     refreshData() {
       // Logic to refresh data when scrolled to the top
       console.log("Refreshing data...");
@@ -134,14 +149,15 @@ export default {
     loadMoreData() {
       var history = this.getQueueAsString();
       console.log("Loading more data...", history);
-      axios.get(`/explore/${history}`).then(res => {
-        this.$store.dispatch('appendDiscovery5', res.data.discoveryList);
-        this.isLoadingMoreData = false; // Reset flag
-        this.$purgeQueue();
-      }).catch(error => {
-        console.error("Error loading more data:", error);
-        this.isLoadingMoreData = false; // Reset flag in case of error
-      });
+      axios.get(`/explore/${history}`, this.getAuthConfig())
+        .then(res => {
+          this.$store.dispatch('appendDiscovery5', res.data.discoveryList);
+          this.isLoadingMoreData = false; // Reset flag
+          this.$purgeQueue();
+        }).catch(error => {
+          console.error("Error loading more data:", error);
+          this.isLoadingMoreData = false; // Reset flag in case of error
+        });
     },
   },
   created() {
@@ -153,7 +169,7 @@ export default {
       isInitiated = false;
       this.isRefreshData = true
     }
-    axios.get(`/explore/${history}`)
+    axios.get(`/explore/${history}`, this.getAuthConfig())
       .then(res => {
         if (!isInitiated) {
           this.$store.dispatch('getDiscoverys5', res.data.discoveryList)

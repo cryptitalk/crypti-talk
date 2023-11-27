@@ -126,33 +126,50 @@ export default {
                 });
             }
         },
-
+        getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        },
+        getAuthConfig() {
+            const loginInfo = this.getCookie('logged-in:' + global.connectedAccount);
+            const config = {};
+            if (loginInfo) {
+                config.headers = {
+                    Authorization: global.connectedAccount + ":" + loginInfo
+                };
+            }
+            return config
+        },
         refreshData() {
             // Logic to refresh data when scrolled to the top
             console.log("Refreshing data...");
             // Implement your data refreshing logic here
             var history = this.getQueueAsString();
-            axios.get(`/explore/${history}`).then(res => {
-                this.$store.dispatch('getDiscoverys', res.data.discoveryList);
-                this.isRefreshData = false; // Reset flag
-                this.$purgeQueue();
-            }).catch(error => {
-                console.error("Error loading more data:", error);
-                this.isRefreshData = false; // Reset flag in case of error
-            });
+            axios.get(`/explore/${history}`, getAuthConfig())
+                .then(res => {
+                    this.$store.dispatch('getDiscoverys', res.data.discoveryList);
+                    this.isRefreshData = false; // Reset flag
+                    this.$purgeQueue();
+                }).catch(error => {
+                    console.error("Error loading more data:", error);
+                    this.isRefreshData = false; // Reset flag in case of error
+                });
         },
 
         loadMoreData() {
             var history = this.getQueueAsString();
             console.log("Loading more data...", history);
-            axios.get(`/explore/${history}`).then(res => {
-                this.$store.dispatch('appendDiscovery', res.data.discoveryList);
-                this.isLoadingMoreData = false; // Reset flag
-                this.$purgeQueue();
-            }).catch(error => {
-                console.error("Error loading more data:", error);
-                this.isLoadingMoreData = false; // Reset flag in case of error
-            });
+            axios.get(`/explore/${history}`, getAuthConfig())
+                .then(res => {
+                    this.$store.dispatch('appendDiscovery', res.data.discoveryList);
+                    this.isLoadingMoreData = false; // Reset flag
+                    this.$purgeQueue();
+                }).catch(error => {
+                    console.error("Error loading more data:", error);
+                    this.isLoadingMoreData = false; // Reset flag in case of error
+                });
         },
     },
     created() {
@@ -163,7 +180,7 @@ export default {
             this.isRefreshData = true
             isInitiated = false;
         }
-        axios.get(`/explore/${history}`)
+        axios.get(`/explore/${history}`, getAuthConfig())
             .then(res => {
                 if (!isInitiated) {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)
