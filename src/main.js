@@ -26,6 +26,7 @@ if (process.env.NODE_ENV === 'production') {
 
 global.isInitiated = false
 global.lastScrollY = 0
+global.connectedAccount = null;
 
 Vue.filter('truncate', function (value, length) {
   if (value.length <= length) {
