@@ -147,7 +147,7 @@ export default {
             console.log("Refreshing data...");
             // Implement your data refreshing logic here
             var history = this.getQueueAsString();
-            axios.get(`/explore/${history}`, getAuthConfig())
+            axios.get(`/explore/${history}`, this.getAuthConfig())
                 .then(res => {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList);
                     this.isRefreshData = false; // Reset flag
@@ -161,7 +161,7 @@ export default {
         loadMoreData() {
             var history = this.getQueueAsString();
             console.log("Loading more data...", history);
-            axios.get(`/explore/${history}`, getAuthConfig())
+            axios.get(`/explore/${history}`, this.getAuthConfig())
                 .then(res => {
                     this.$store.dispatch('appendDiscovery', res.data.discoveryList);
                     this.isLoadingMoreData = false; // Reset flag
@@ -180,7 +180,7 @@ export default {
             this.isRefreshData = true
             isInitiated = false;
         }
-        axios.get(`/explore/${history}`, getAuthConfig())
+        axios.get(`/explore/${history}`, this.getAuthConfig())
             .then(res => {
                 if (!isInitiated) {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)
@@ -221,7 +221,7 @@ export default {
 .discovery {
     width: 100%;
     height: 100%;
-    top: 2.5rem;
+    top: 2.8rem;
     bottom: 5.0rem;
     overflow: hidden;
     position: absolute;

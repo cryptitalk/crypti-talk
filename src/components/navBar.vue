@@ -188,11 +188,11 @@ export default {
   background-color: blue;
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 10px 20px; /* Reduced padding */
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 14px; /* Smaller font size */
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 8px;
@@ -206,14 +206,13 @@ export default {
 
 .web3-disconnect-button {
   background-color: orange; /* Orange background for disconnect button */
-  /* Other styles can be similar to .web3-login-button */
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 10px 20px; /* Reduced padding */
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 14px; /* Smaller font size */
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 8px;

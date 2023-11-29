@@ -2,8 +2,9 @@
     <div class="panel">
         <div class="header">
             <img src="../assets/wm.png" alt="watermelon">
-            <div>用户名 {{user.name}}</div>
+            <div>username {{user.name}}</div>
         </div>
+<!--
         <div class="content">
             <div class="con_item">
                 <div class="img">
@@ -78,6 +79,7 @@
                 </div>
             </div>
         </div>
+-->
     </div>
 </template>
 <script>
