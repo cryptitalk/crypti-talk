@@ -244,6 +244,18 @@ export default {
           this.isWalletConnected = false;
         }
       });
+      window.ethereum.on('connect', (accounts) => {
+        if (accounts.length > 0) {
+          console.log('Account switched:', accounts[0]);
+          this.checkIfWalletIsConnected()
+        } else {
+          // Handle case when user disconnects all accounts
+          console.log('All accounts have been disconnected');
+          global.connectedAccount = '';
+          this.connectedAccount = '';
+          this.isWalletConnected = false;
+        }
+      });
     }
   },
 }
