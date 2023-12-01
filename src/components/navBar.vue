@@ -26,15 +26,7 @@
           </ul>
         </div>
         <div class="nav_right">
-          <vue-metamask ref="metamask" :initConnect="false" @onComplete="handleMetaMaskData"></vue-metamask>
-          <button v-if="!isWalletConnected" @click="web3Login" class="web3-login-button">
-            Login
-          </button>
-          <div v-else class="wallet-info">
-            <button @click="disconnectWallet" class="web3-disconnect-button">
-              Discon {{ formattedAddress }}
-            </button>
-          </div>
+          <w3m-button label="Connect">Connect</w3m-button>
         </div>
       </div>
       <div class="search">
@@ -47,14 +39,56 @@
   </div>
 </template>
 <script>
-import Panel from './Panel.vue'
-import VueMetamask from 'vue-metamask';
+import Panel from './Panel.vue';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5';
+import { ethers } from 'ethers'
+
+const projectId = '2306be42fa635e4c7f57e5002e25f088';
+
+const mainnet = {
+  chainId: 1,
+  name: 'Ethereum',
+  currency: 'ETH',
+  explorerUrl: 'https://etherscan.io',
+  rpcUrl: 'https://cloudflare-eth.com'
+};
+
+const polygon = {
+  chainId: 137,
+  name: 'Polygon',
+  currency: 'MATIC',
+  explorerUrl: 'https://polygonscan.com/',
+  rpcUrl: 'https://polygon-rpc.com/'
+}
+
+const bsc = {
+  chainId: 56,
+  name: 'BSC',
+  currency: 'BNB',
+  explorerUrl: 'https://polygonscan.com/',
+  rpcUrl: 'https://bscscan.com/'
+}
+
+const metadata = {
+  name: 'Crypti Talk',
+  description: 'Decentralized AI and Advertisible NFT',
+  url: 'https://app.cryptitalk.com',
+  icons: ['https://storage.googleapis.com/cryptitalk/cryptitalk.png']
+};
+
+const modal = createWeb3Modal({
+  ethersConfig: defaultConfig({ metadata }),
+  chains: [mainnet, polygon, bsc],
+  projectId
+});
 export default {
   data() {
     return {
       popupVisible: false,
       isWalletConnected: false,
-      connectedAccount: ''
+      connectedAccount: '',
+      isMobileDevice: false,
+      walletProvider: null,
     }
   },
   computed: {
@@ -75,78 +109,122 @@ export default {
     focus() {
       this.$router.push('/search')
     },
-    async web3Login() {
-      await this.$refs.metamask.init();
-      await this.checkIfWalletIsConnected()
-    },
-    async disconnectWallet() {
-      this.isWalletConnected = false;
-      global.connectedAccount = '';
-      this.connectedAccount = '';
-    },
-    handleMetaMaskData(data) {
-      console.log('data:', data.web3.eth);
-    },
     getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
     },
     async sign_login() {
-    if (window.ethereum && this.connectedAccount) {
-      try {
-        // Prepare the message to be signed
-        const message = "logged-in";
-        // Request user to sign the message using MetaMask
-        const signature = await window.ethereum.request({
-          method: 'personal_sign',
-          params: [message, this.connectedAccount],
-        });
-
-        // Set the cookie after successful signing
-        document.cookie = "logged-in:"+this.connectedAccount+"=" + signature + "; path=/; max-age=3600"; // Expires in 1 hour
-
-        console.log('Message signed:', signature);
-      } catch (error) {
-        console.error('Error signing message:', error);
-      }
-    } else {
-      console.log('Ethereum object or connected account not found.');
-    }
-  },
-    async checkIfWalletIsConnected() {
-      if (window.ethereum) {
+      if (this.walletProvider && this.connectedAccount) {
         try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
-            console.log('Wallet is connected:', accounts);
+          if (this.checkIfMobileDevice()) {
+            modal.open({ view: 'Connect' })
+          }
+          // Create a new Web3Provider instance using ethers
+          const provider = new ethers.providers.Web3Provider(this.walletProvider);
+
+          // Get the signer object from the provider
+          const signer = provider.getSigner();
+
+          // Prepare the message to be signed
+          const message = "logged-in";
+          // Request user to sign the message
+          const signature = await signer.signMessage(message);
+
+          // Set the cookie after successful signing
+          document.cookie = "logged-in:" + this.connectedAccount + "=" + signature + "; path=/; max-age=36000"; // Expires in 1 hour
+
+          console.log('Message signed:', signature);
+        } catch (error) {
+          console.error('Error signing message:', error);
+        }
+      } else {
+        console.log('Wallet provider or connected account not found.');
+      }
+    },
+    async web3WalletConnectLogin() {
+      try {
+        await this.checkIfWalletIsConnected()
+      } catch (error) {
+        console.error('Error with WalletConnect:', error);
+      }
+    },
+    checkIfMobileDevice() {
+      return /Mobi|Android/i.test(navigator.userAgent);
+    },
+    async getWalletProviderWithRetry(maxRetries = 3) {
+      let attempts = 0;
+      let walletProvider = null;
+
+      while (attempts < maxRetries) {
+        try {
+          walletProvider = await modal.getWalletProvider();
+          if (walletProvider) {
+            console.log('Wallet provider found:', walletProvider);
+            break; // Exit the loop if the provider is found
+          } else {
+            console.log(`Provider not found, retrying (${attempts + 1}/${maxRetries})...`);
+          }
+        } catch (error) {
+          console.error('Error getting wallet provider:', error);
+          // Optionally, you can decide to break the loop here if the error is critical
+        }
+
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
+      }
+
+      return walletProvider;
+    },
+    async checkIfWalletIsConnected() {
+      // Attempt to get the wallet provider with retries
+      this.walletProvider = await this.getWalletProviderWithRetry();
+
+      if (this.walletProvider) {
+        // Create a new Web3Provider instance using ethers
+        const provider = new ethers.providers.Web3Provider(this.walletProvider);
+
+        try {
+          // List all accounts connected to the provider
+          const accounts = await provider.listAccounts();
+          const lowercaseAccounts = accounts.map(account => account.toLowerCase());
+
+          if (lowercaseAccounts.length > 0) {
+            console.log('Wallet is connected:', lowercaseAccounts);
             this.isWalletConnected = true;
-            this.connectedAccount = accounts[0];
-            global.connectedAccount = accounts[0];
+            this.connectedAccount = lowercaseAccounts[0];
+            global.connectedAccount = lowercaseAccounts[0];
+
             // Check if the 'logged-in' cookie is present
-            const loggedInCookie = this.getCookie('logged-in:'+accounts[0]);
+            const loggedInCookie = this.getCookie('logged-in:' + lowercaseAccounts[0]);
+            console.log("cookie is", loggedInCookie)
             if (!loggedInCookie) {
+              console.log("let's sign cookie")
               await this.sign_login(); // Call the sign_login method if cookie is not found
             }
           } else {
             console.log('Wallet is not connected');
             this.isWalletConnected = false;
-            global.connectedAccount = '';
             this.connectedAccount = '';
+            global.connectedAccount = '';
           }
         } catch (error) {
-          console.error(error);
-          // Handle any errors
+          console.error('Error checking wallet connection:', error);
+          this.isWalletConnected = false;
+          this.connectedAccount = '';
+          global.connectedAccount = '';
         }
       } else {
-        console.log('Ethereum object not found, install MetaMask.');
-        alert('MetaMask is not detected. Please install MetaMask to use complete feature.');
+        console.log('Unable to find wallet provider after 3 retries.');
+        this.isWalletConnected = false;
+        this.connectedAccount = '';
+        global.connectedAccount = '';
+        // Additional handling if needed
       }
-    }
+    },
   },
   components: {
-    Panel,
-    VueMetamask
+    Panel
   },
   created() {
     this.$router.push('/main2')
