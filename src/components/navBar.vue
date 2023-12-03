@@ -89,10 +89,11 @@ export default {
     this.$router.push('/main2') 
   },
   mounted() {
-    console.log("walletmoal", this.$refs.walletModal)
-    if (this.$refs.walletModal) {
-      this.$refs.walletModal.checkIfWalletIsConnected();
-    }
+    this.checkWalletConnectionInterval = setInterval(() => {
+      if (this.$refs.walletModal) {
+        this.$refs.walletModal.checkIfWalletIsConnected();
+      }
+    }, 15000); // 5000 milliseconds = 5 seconds
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
@@ -122,6 +123,12 @@ export default {
           this.isWalletConnected = false;
         }
       });
+    }
+  },
+  beforeDestroy() {
+    // Clear the interval when the component is destroyed
+    if (this.checkWalletConnectionInterval) {
+      clearInterval(this.checkWalletConnectionInterval);
     }
   },
 }
