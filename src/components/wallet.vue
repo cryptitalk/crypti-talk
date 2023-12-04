@@ -99,6 +99,7 @@ export default {
                         this.isWalletConnected = true;
                         this.connectedAccount = lowercaseAccounts[0];
                         global.connectedAccount = lowercaseAccounts[0];
+                        document.cookie = "last-loggedin-account=" + global.connectedAccount + "; path=/; max-age=36000"; // Expires in 1 hour
 
                         // Check if the 'logged-in' cookie is present
                         const loggedInCookie = this.getCookie('logged-in:' + lowercaseAccounts[0]);

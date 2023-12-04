@@ -121,12 +121,15 @@ export default {
       if (parts.length === 2) return parts.pop().split(';').shift();
       return null;
     },
-    getAuthConfig() {
-      const loginInfo = this.getCookie('logged-in:' + global.connectedAccount);
+    getAuthConfig() {  
+      
+      const lastAccount = this.getCookie('last-loggedin-account');
+      console.log("lastAccount", lastAccount)
+      const loginInfo = this.getCookie('logged-in:' + lastAccount);
       const config = {};
       if (loginInfo) {
         config.headers = {
-          Authorization: global.connectedAccount + ":" + loginInfo
+          Authorization: lastAccount + ":" + loginInfo
         };
       }
       return config
