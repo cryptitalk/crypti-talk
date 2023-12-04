@@ -17,13 +17,9 @@
                                 </div>
                                 <div class="note">
                                     <a class="user">
-                                        <img v-lazy="item.avator" alt="">
                                         <span>{{ item.uname }}</span>
                                     </a>
-                                    <a class="like">
-                                        <img src="../../assets/like.png" alt="like">
-                                        <span>{{ item.like }}</span>
-                                    </a>
+                                    <like-button :item="item"></like-button>
                                 </div>
                             </div>
                         </li>
@@ -41,13 +37,9 @@
                                 </div>
                                 <div class="note">
                                     <a class="user">
-                                        <img v-lazy="item.avator" alt="">
                                         <span>{{ item.uname }}</span>
                                     </a>
-                                    <a class="like">
-                                        <img src="../../assets/like.png" alt="like">
-                                        <span>{{ item.like }}</span>
-                                    </a>
+                                    <like-button :item="item"></like-button>
                                 </div>
                             </div>
                         </li>
@@ -60,6 +52,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
+import LikeButton from '../../components/LikeButton.vue';
 const response = require('../../common/disgoods.json')
 export default {
     data() {
@@ -69,6 +62,9 @@ export default {
             isRefreshData: false, // Flag to indicate if more data is being loaded
             isInitiated: false,
         }
+    },
+    components: {
+        LikeButton
     },
     computed: {
         ...mapGetters([
@@ -308,20 +304,6 @@ export default {
     height: 0.63rem;
     margin-right: 0.13rem;
     border-radius: 50%;
-}
-
-.discovery .dis-list ul > li .note_item .note .like {
-    line-height: 0.63rem;
-    display: flex;
-    color: #999999;
-    flex-direction: row;
-}
-
-.discovery .dis-list ul > li .note_item .note .like img {
-    margin-top: 0.13rem;
-    margin-right: 0.11rem;
-    width: 0.37rem;
-    height: 0.37rem;
-}              
+}         
 </style>
 
