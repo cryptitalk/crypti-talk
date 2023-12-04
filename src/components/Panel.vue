@@ -34,6 +34,7 @@ export default {
             let message = "user: " + global.connectedAccount + "\n"
             message += "browsing point: " + this.user.browsing + "\n"
             message += "search point: " + this.user.search + "\n"
+            message += "like point: " + this.user.like + "\n"
             this.showToast(message);
         },
 
