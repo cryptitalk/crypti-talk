@@ -17,13 +17,9 @@
                 </div>
                 <div class="note">
                   <a class="user">
-                    <img v-lazy="item.avator" alt="">
                     <span>{{ item.uname }}</span>
                   </a>
-                  <a class="like">
-                    <img src="../../assets/like.png" alt="like">
-                    <span>{{ item.like }}</span>
-                  </a>
+                  <like-button :item="item"></like-button>
                 </div>
               </div>
             </li>
@@ -36,7 +32,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
-const response = require('../../common/disgoods.json')
+import LikeButton from '../../components/LikeButton.vue';
+
 export default {
   data() {
     return {
@@ -45,6 +42,9 @@ export default {
       isRefreshData: false, // Flag to indicate if more data is being loaded
       isInitiated: false,
     }
+  },
+  components: {
+    LikeButton
   },
   computed: {
     ...mapGetters([
@@ -296,20 +296,6 @@ export default {
   margin-right: 0.13rem;
   border-radius: 50%;
 }
-
-.discovery .dis-list-five-columns ul > li .note_item .note .like {
-  line-height: 0.63rem;
-  display: flex;
-  color: #999999;
-  flex-direction: row;
-}
-
-.discovery .dis-list-five-columns ul > li .note_item .note .like img {
-  margin-top: 0.13rem;
-  margin-right: 0.11rem;
-  width: 0.37rem;
-  height: 0.37rem;
-}  
 
 @media (min-width: 1024px) { /* Adjust the min-width as per your requirement */
   .discovery .dis-list-five-columns ul > li {

@@ -89,6 +89,7 @@ export default {
     this.$router.push('/main2') 
   },
   mounted() {
+    this.$refs.walletModal.checkIfWalletIsConnected();
     this.checkWalletConnectionInterval = setInterval(() => {
       if (this.$refs.walletModal) {
         this.$refs.walletModal.checkIfWalletIsConnected();
