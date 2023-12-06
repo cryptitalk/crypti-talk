@@ -26,8 +26,9 @@
             <div>{{ note.uname }}</div>
           </div>
           <div class="btn">
-            <button>＋ follow</button>
+            <button @click="showCommentBox = true">＋comment</button>
           </div>
+          <comment-modal v-if="showCommentBox" @submit="handleCommentSubmit" @close="showCommentBox = false" />
         </div>
         <!-- <div class="n_desc"> -->
         <div class="n_desc" v-html="linkedDescription"></div>
@@ -50,6 +51,15 @@
             <span class="d_cl">{{ note.collect }} collects {{ note.like }}likes</span>
           </div>
         </div>
+        <div class="comments_container">
+          <div class="comment" v-for="(comment, index) in note.comments" :key="index">
+            <div class="comment_user">
+              <img :src="comment.Avatar" alt="User avatar" class="user_avatar">
+              <span class="user_name">{{ comment.UserName }}</span>
+            </div>
+            <div class="comment_text">{{ comment.Content }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </transition>
@@ -59,15 +69,19 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.min.css'
 import BScroll from 'better-scroll'
 import { mapGetters } from 'vuex'
+import CommentModal from '../components/CommentModal.vue'
+import { authMixin } from '../common/authMixin.js'
 export default {
   data() {
     return {
       swiperOption: {
         pagination: '.swiper-pagination',
-        paginationType: 'fraction'
-      }
+        paginationType: 'fraction',
+      },
+      showCommentBox: false,
     }
   },
+  mixins: [authMixin],
   computed: {
     ...mapGetters([
       'note'
@@ -111,8 +125,23 @@ export default {
       }
     },
     isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        },
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
+    handleCommentSubmit(commentText) {
+      const commentData = { itemId: this.note.id, content: commentText };
+      axios.post('/useraction', commentData, this.getAuthConfig()).then(response => {
+        console.log('Comment data updated on backend', response.data);
+        if (!this.note.comments) {
+          this.$set(this.note, 'comments', []);
+        }
+        this.note.comments.push(response.data);
+        this.showCommentBox = false;
+      }).catch(error => {
+        console.error('Error updating like data', error);
+        alert('Failed to post comment. Please try again.');
+        this.showCommentBox = false;
+      });
+    },
     _initScroll() {
       const isMobile = this.isMobileDevice();
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
@@ -131,7 +160,8 @@ export default {
   },
   components: {
     swiper,
-    swiperSlide
+    swiperSlide,
+    CommentModal,
   },
   created() {
     if (this.$store.state.isNav) {
@@ -179,14 +209,28 @@ export default {
   width: 100%;
 }
 
+.swiper-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 9rem;
+  /* You can adjust this height as needed */
+}
+
 .swiper-item img {
-  width: 100%;
-  height: 12rem;
+  max-width: 100%;
+  /* Image can take up to full width of the container */
+  max-height: 100%;
+  /* Image can take up to full height of the container */
+  object-fit: contain;
 }
 
 .swiper-item img[lazy=loading] {
-  width: 100%;
-  height: 12rem;
+  max-width: 100%;
+  /* Image can take up to full width of the container */
+  max-height: 100%;
+  /* Image can take up to full height of the container */
+  object-fit: contain;
 }
 
 .swiper-pagination-fraction {
@@ -250,15 +294,26 @@ export default {
   height: 0.78rem;
   color: #ff2741;
   border-radius: 6px;
-  font-size: 0.37rem;
+  font-size: 0.30rem;
   border: 1px solid #ff2741;
   background-color: #fff;
 }
 
+.btn button:hover {
+  background-color: #ff2741;
+  /* Change background color on hover */
+  color: #fff;
+  /* Change text color on hover for better contrast */
+  border: 1px solid #ff2741;
+  /* Optional: Adjust the border color if needed */
+  cursor: pointer;
+  /* Change cursor to indicate it's clickable */
+}
+
 .common-style {
-  font-size: 0.42rem;
-  line-height: 0.56rem;
-  padding: 0.37rem;
+  font-size: 0.35rem;
+  line-height: 0.45rem;
+  padding: 0.1rem;
   color: #0000EE;
   text-decoration: none;
   /* This removes the underline from links */
@@ -277,16 +332,16 @@ export default {
 }
 
 .n_desc {
-  font-size: 0.42rem;
-  line-height: 0.56rem;
-  padding: 0.37rem;
+  font-size: 0.35rem;
+  line-height: 0.45rem;
+  padding: 0.1rem;
   color: #333333;
 }
 
 .note_footer {
   width: 100%;
   color: #a3a3a3;
-  font-size: 0.39rem;
+  font-size: 0.30rem;
 }
 
 .adr {
@@ -300,13 +355,50 @@ export default {
   justify-content: space-between;
 }
 
-@media (min-width: 1024px) { /* Adjust this breakpoint as needed */
+/* Styles for comments section */
+.comments_container {
+  padding: 10px;
+}
+
+.comment {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 10px 0;
+}
+
+.comment_user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.user_avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user_name {
+  font-weight: bold;
+}
+
+.comment_text {
+  font-size: 0.35rem;
+}
+
+@media (min-width: 1024px) {
+
+  /* Adjust this breakpoint as needed */
   .note_page {
-    width: 100%; /* Set width to 50% for desktop screens */
+    width: 100%;
+    /* Set width to 50% for desktop screens */
     max-width: 1024px;
-    left: 50%; /* Position 50% from the left of the screen */
-    transform: translateX(-50%); /* Shift the element to the left by half its own width */
-    position: absolute; /* Ensure the element is positioned absolutely */
+    left: 50%;
+    /* Position 50% from the left of the screen */
+    transform: translateX(-50%);
+    /* Shift the element to the left by half its own width */
+    position: absolute;
+    /* Ensure the element is positioned absolutely */
   }
 }
 </style>
