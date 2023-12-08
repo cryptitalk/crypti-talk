@@ -1,10 +1,10 @@
 <template>
     <div class="panel">
-        <div class="header" @click="fetchUserData">
-            <img src="../assets/wm.png" alt="watermelon">
-            <div>0x00000 </div>
+        <div class="header">
+            <img :src="userImage" alt="user image">
+            <div>{{ userName }}</div>
         </div>
-        
+
         <div class="content">
             <div class="con_item" @click="handleEntropyClick">
                 <div class="img">
@@ -14,19 +14,35 @@
                     <span>ENTROPY</span>
                 </div>
             </div>
-        </div>
 
+            <!-- About Link -->
+            <div class="con_item">
+                <a href="https://linktr.ee/cryptitalk" target="_blank" class="about-link">
+                    <div class="text">LinkTree</div>
+                </a>
+            </div>
+        </div>
     </div>
 </template>
 <script>
+import { EventBus } from '../common/eventBus.js';
+
 export default {
     data() {
         return {
             user: [],
+            userImage: global.userImg,
+            userName: global.userName,
         }
     },
     mounted() {
         this.fetchUserData();
+        EventBus.$on('userImgChanged', (newImageURL) => {
+            this.userImage = newImageURL;
+        });
+        EventBus.$on('userNameChanged', (newUserName) => {
+            this.userName = newUserName;
+        });
     },
     methods: {
         async handleEntropyClick() {
@@ -97,6 +113,7 @@ export default {
     font-size: 16px;
     margin-bottom: 30px;
     display: flex;
+    justify-content: center; 
     align-items: center
     border-radius: 10px /* Rounded corners for items */
     padding: 5px 15px
@@ -111,17 +128,32 @@ export default {
 }
 
 .content .con_item .img {
-        margin-right: 15px;
+    margin-right: 15px;
 }
     
 .content .con_item .img img {
-        width: 25px;
-        height: 25px;
+    width: 25px;
+    height: 25px;
 }
-    
-    .content .con_item .text {
-        height: 25px;
-        line-height: 25px;
-    }
+
+.content .con_item .text {
+    height: 25px;
+    line-height: 25px;
+}
+
+.about-link {
+    text-decoration: none; // Removes the underline from the link
+    color: inherit; // Inherits the color from the parent element
+    display: flex; // To align the text properly
+    justify-content: center; /* Centers content horizontally in a flex container */
+    align-items: center; /* Centers content vertically in a flex container */
+    width: 100%; 
+}
+
+.about-link .text {
+    height: 25px;
+    line-height: 25px;
+    text-align: center; /* Centers text horizontally */
+}
 </style>
 

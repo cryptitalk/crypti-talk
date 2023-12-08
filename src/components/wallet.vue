@@ -4,6 +4,7 @@
 <script>
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5';
 import { ethers } from 'ethers';
+import { EventBus } from '../common/eventBus.js';
 
 // ... Include the rest of the modal-related code here ...
 const projectId = '2306be42fa635e4c7f57e5002e25f088';
@@ -81,6 +82,23 @@ export default {
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         },
+        async setGlobalAccounts(account) {
+            if (account && global.connectedAccount != account) {
+                global.connectedAccount = account;
+                try {
+                    // Perform an Axios request to get account information
+                    const response = await axios.get(`/validuser/${global.connectedAccount}`);
+                    global.userName = response.data.userName
+                    global.userImg = response.data.userImg
+                    EventBus.$emit('userImgChanged', response.data.userImg);
+                    EventBus.$emit('userNameChanged', response.data.userName);
+                } catch (error) {
+                    console.error('Error fetching account information:', error);
+                }
+            } else {
+                console.log('No account provided');
+            }
+        },
         async checkIfWalletIsConnected() {
             // Attempt to get the wallet provider with retries
             this.walletProvider = await this.getWalletProviderWithRetry();
@@ -98,7 +116,7 @@ export default {
                         console.log('Wallet is connected:', lowercaseAccounts);
                         this.isWalletConnected = true;
                         this.connectedAccount = lowercaseAccounts[0];
-                        global.connectedAccount = lowercaseAccounts[0];
+                        this.setGlobalAccounts(lowercaseAccounts[0]);
                         document.cookie = "last-loggedin-account=" + global.connectedAccount + "; path=/; max-age=36000"; // Expires in 1 hour
 
                         // Check if the 'logged-in' cookie is present

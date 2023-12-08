@@ -202,7 +202,7 @@ export default {
 
 .discovery {
   width: 100%;
-  max-width: 1024px;
+  max-width: 1224px;
   height: 100%;
   top: 2.5rem;
   bottom: 5.0rem;

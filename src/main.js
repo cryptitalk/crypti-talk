@@ -27,6 +27,8 @@ if (process.env.NODE_ENV === 'production') {
 global.isInitiated = false
 global.lastScrollY = 0
 global.connectedAccount = null;
+global.userName = '0x00000';
+global.userImg = 'https://raw.githubusercontent.com/cryptitalk/crypti-talk/master/src/assets/wm.png';
 
 Vue.filter('truncate', function (value, length) {
   if (value.length <= length) {
