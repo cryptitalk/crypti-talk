@@ -11,15 +11,13 @@
         </div>
         <div class="nav_center">
           <ul class="nav_tab">
-            <!--
+<!--
             <li class="tab-item">
               <router-link to="/main1">search</router-link>
             </li>
--->
             <li class="tab-item">
               <router-link :to="dynamicRoute">discovery</router-link>
             </li>
-            <!--
             <li class="tab-item">
               <router-link to="/main3">购买</router-link>
             </li>
@@ -297,6 +295,9 @@ export default {
 @media screen and (min-width: 1024px) {
   .app {
     min-width: 1024px; /* Ensure .app does not go below 1024px width on larger screens */
+  }
+  .nav_left {
+    display: none;
   }
 }
 </style>

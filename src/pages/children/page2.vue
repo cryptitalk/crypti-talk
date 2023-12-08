@@ -1,29 +1,37 @@
 <template>
-  <div class="discovery_page">
+  <div class="discovery">
     <div v-if="isLoading" class="loading-indicator">
       <div class="spinner"></div>
     </div>
-    <div v-else class="discovery" ref="disWrapper">
-      <div class="dis-list-five-columns">
-        <div v-for="column in 5" :key="column" class="column">
-          <ul>
-            <li v-for="(item, index) in getItemsForColumn(column)" @click="selectedNote(item)" :key="index">
-              <div class="note_item">
-                <a class="img">
-                  <img v-lazy="item.img" alt="">
-                </a>
-                <div class="desc">
-                  <p>{{ item.short_desc | truncate(20) }}</p>
-                </div>
-                <div class="note">
-                  <a class="user">
-                    <span>{{ item.uname }}</span>
+    <div v-else class="content-area">
+      <!-- Panel on the Left -->
+      <div class="left-panel">
+        <Panel />
+      </div>
+
+      <!-- Five Lists on the Right -->
+      <div class="right-lists" ref="disWrapper">
+        <div class="dis-list-five-columns">
+          <div v-for="column in 5" :key="column" class="column">
+            <ul>
+              <li v-for="(item, index) in getItemsForColumn(column)" @click="selectedNote(item)" :key="index">
+                <div class="note_item">
+                  <a class="img">
+                    <img v-lazy="item.img" alt="">
                   </a>
-                  <like-button :item="item"></like-button>
+                  <div class="desc">
+                    <p>{{ item.short_desc | truncate(20) }}</p>
+                  </div>
+                  <div class="note">
+                    <a class="user">
+                      <span>{{ item.uname }}</span>
+                    </a>
+                    <like-button :item="item"></like-button>
+                  </div>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -33,6 +41,7 @@
 import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
 import LikeButton from '../../components/LikeButton.vue';
+import Panel from '../../components/Panel.vue';
 
 export default {
   data() {
@@ -44,7 +53,8 @@ export default {
     }
   },
   components: {
-    LikeButton
+    LikeButton,
+    Panel,
   },
   computed: {
     ...mapGetters([
@@ -201,6 +211,23 @@ export default {
   background: #f5f8fa;
   left: 50%; /* Positioned 50% from the left of the screen */
   transform: translateX(-50%); /* Shifts the element to the left by half its own width */
+  display: flex;
+}
+
+.content-area {
+  display: flex; /* Use flexbox to align the panel and lists side by side */
+  width: 100%; /* Set the width to take up the full width of the parent container */
+}
+
+.left-panel {
+  flex: 1; 
+}
+
+.right-lists {
+  flex: 7; /* Adjust this value to change the width of the lists area */
+  display: flex;
+  flex-wrap: wrap;
+  /* additional styling */
 }
 
 .loading-indicator {
