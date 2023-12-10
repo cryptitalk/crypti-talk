@@ -29,6 +29,7 @@ global.lastScrollY = 0
 global.connectedAccount = null;
 global.userName = '0x00000';
 global.userImg = 'https://raw.githubusercontent.com/cryptitalk/crypti-talk/master/src/assets/wm.png';
+global.userBio = "N/A"
 
 Vue.filter('truncate', function (value, length) {
   if (value.length <= length) {

@@ -15,17 +15,31 @@
                 </div>
             </div>
 
+            <div class="con_item" @click="showEditProfileModal">
+                <div class="img">
+                    <img src="../assets/icon9.png" alt="edit profile">
+                </div>
+                <div class="text">
+                    <span>Edit Profile</span>
+                </div>
+            </div>
+
             <!-- About Link -->
             <div class="con_item">
                 <a href="https://linktr.ee/cryptitalk" target="_blank" class="about-link">
                     <div class="text">LinkTree</div>
                 </a>
             </div>
+
+            <!-- Edit Profile Modal -->
+            <EditProfileModal v-if="isEditProfileModalVisible" @close="hideEditProfileModal"
+                @save-changes="handleSaveProfileChanges"></EditProfileModal>
         </div>
     </div>
 </template>
 <script>
 import { EventBus } from '../common/eventBus.js';
+import EditProfileModal from "./EditProfileModal.vue";
 
 export default {
     data() {
@@ -33,7 +47,11 @@ export default {
             user: [],
             userImage: global.userImg,
             userName: global.userName,
+            isEditProfileModalVisible: false,
         }
+    },
+    components: {
+        EditProfileModal
     },
     mounted() {
         this.fetchUserData();
@@ -54,7 +72,6 @@ export default {
             message += "comment point: " + this.user.comment + "\n"
             this.showToast(message);
         },
-
         showToast(message) {
             alert(message);
         },
@@ -70,7 +87,19 @@ export default {
             } catch (error) {
                 console.error('There was an error fetching the user data:', error);
             }
-        }
+        },
+        showEditProfileModal() {
+            this.isEditProfileModalVisible = true;
+        },
+        hideEditProfileModal() {
+            this.isEditProfileModalVisible = false;
+        },
+        handleSaveProfileChanges(profileData) {
+            // Handle saving changes to the user's profile here
+            // This method will be called when the "Save" button is clicked in the modal
+            // You can update the user's data in your application state or make an API request
+            console.log("Profile Data:", profileData);
+        },
     }
 }
 </script>

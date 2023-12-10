@@ -90,6 +90,7 @@ export default {
                     const response = await axios.get(`/validuser/${global.connectedAccount}`);
                     global.userName = response.data.userName
                     global.userImg = response.data.userImg
+                    global.userBio = response.data.userBio
                     EventBus.$emit('userImgChanged', response.data.userImg);
                     EventBus.$emit('userNameChanged', response.data.userName);
                 } catch (error) {
