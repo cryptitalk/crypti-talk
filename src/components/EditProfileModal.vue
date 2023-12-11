@@ -185,4 +185,12 @@ export default {
     /* Twitter's cancel button background color */
     color: #333333;
 }
+
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 100%; /* Make the modal full width on mobile */
+        max-width: none; /* Remove the maximum width */
+        border-radius: 0; /* Remove border-radius for full-width effect */
+    }
+}
 </style>

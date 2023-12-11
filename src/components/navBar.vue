@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <mt-popup v-model="popupVisible" position="left">
+    <mt-popup v-model="popupVisible" class="custom-popup">
       <panel></panel>
     </mt-popup>
     <wallet-modal ref="walletModal"></wallet-modal>
@@ -136,6 +136,11 @@ export default {
 * {
   margin: 0;
   padding: 0;
+}
+
+.custom-popup {
+  width: 80%;
+  display: flex;
 }
 
 /* Centering .navbar */

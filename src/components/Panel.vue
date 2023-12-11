@@ -1,9 +1,11 @@
 <template>
     <div class="panel">
         <div class="header">
-            <img :src="userImage" alt="user image">
-            <div>{{ userName }}</div>
+            <div class="user-image">
+                <img :src="userImage" alt="user image">
+            </div>
         </div>
+        <div class="user-name">{{ userName }}</div>
 
         <div class="content">
             <div class="con_item" @click="handleEntropyClick">
@@ -117,17 +119,30 @@ export default {
 }
 
 .header {
-    display: flex
-    align-items: center
-    justify-content: center
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
-    margin-top: 50px
-    margin-bottom: 20px
+    margin-top: 50px;
+    text-align: center;
 }
 
-.header img {
-    width: 40px;
-    height: 40px;
+.user-image {
+    /* Add styling for the user image container */
+    //margin-bottom: 10px;
+}
+
+.user-image img {
+    /* Apply styling to the user image */
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.user-name {
+    /* Apply styling to the user name */
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .content {
