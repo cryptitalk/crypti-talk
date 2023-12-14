@@ -42,6 +42,7 @@ import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
 import LikeButton from '../../components/LikeButton.vue';
 import Panel from '../../components/Panel.vue';
+import { EventBus } from '../../common/eventBus.js';
 
 export default {
   data() {
@@ -55,6 +56,7 @@ export default {
   components: {
     LikeButton,
     Panel,
+    EventBus,
   },
   computed: {
     ...mapGetters([
@@ -131,8 +133,8 @@ export default {
       if (parts.length === 2) return parts.pop().split(';').shift();
       return null;
     },
-    getAuthConfig() {  
-      
+    getAuthConfig() {
+
       const lastAccount = this.getCookie('last-loggedin-account');
       console.log("lastAccount", lastAccount)
       const loginInfo = this.getCookie('logged-in:' + lastAccount);
@@ -172,6 +174,12 @@ export default {
           this.isLoadingMoreData = false; // Reset flag in case of error
         });
     },
+  },
+  mounted() {
+    EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
+      this.screenMode = newUserScreenMode;
+    });
+    console.log(this.screenMode)
   },
   created() {
     var history = this.getQueueAsString();

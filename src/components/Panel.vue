@@ -17,6 +17,15 @@
                 </div>
             </div>
 
+            <div class="con_item" @click="showFollowModal">
+                <div class="img">
+                    <img src="../assets/transmit.png" alt="Follow">
+                </div>
+                <div class="text">
+                    <span>Follow</span>
+                </div>
+            </div>
+
             <div class="con_item" @click="showEditProfileModal">
                 <div class="img">
                     <img src="../assets/icon9.png" alt="edit profile">
@@ -36,12 +45,15 @@
             <!-- Edit Profile Modal -->
             <EditProfileModal v-if="isEditProfileModalVisible" @close="hideEditProfileModal"
                 @save-changes="handleSaveProfileChanges"></EditProfileModal>
+            <FollowModal v-if="isFollowModalVisible" @close="hideFollowModal"
+                @save-changes="handleSaveProfileChanges"></FollowModal>
         </div>
     </div>
 </template>
 <script>
 import { EventBus } from '../common/eventBus.js';
 import EditProfileModal from "./EditProfileModal.vue";
+import FollowModal from "./FollowModal.vue";
 
 export default {
     data() {
@@ -50,10 +62,12 @@ export default {
             userImage: global.userImg,
             userName: global.userName,
             isEditProfileModalVisible: false,
+            isFollowModalVisible: false,
         }
     },
     components: {
-        EditProfileModal
+        EditProfileModal,
+        FollowModal
     },
     mounted() {
         this.fetchUserData();
@@ -93,8 +107,14 @@ export default {
         showEditProfileModal() {
             this.isEditProfileModalVisible = true;
         },
+        showFollowModal() {
+            this.isFollowModalVisible = true;
+        },
         hideEditProfileModal() {
             this.isEditProfileModalVisible = false;
+        },
+        hideFollowModal() {
+            this.isFollowModalVisible = false;
         },
         handleSaveProfileChanges(profileData) {
             // Handle saving changes to the user's profile here

@@ -11,21 +11,16 @@
         </div>
         <div class="nav_center">
           <ul class="nav_tab">
-<!--
             <li class="tab-item">
-              <router-link to="/main1">search</router-link>
+              <a @click="handleFollowTabClick">follow</a>
             </li>
             <li class="tab-item">
-              <router-link :to="dynamicRoute">discovery</router-link>
+              <a @click="handleNewTabClick">new</a>
             </li>
-            <li class="tab-item">
-              <router-link to="/main3">购买</router-link>
-            </li>
--->
           </ul>
         </div>
         <div class="nav_right">
-          <w3m-button label="Connect">Connect</w3m-button>
+          <w3m-button label="Connect" balance="hide" size="sm">Connect</w3m-button>
         </div>
       </div>
       <div class="search">
@@ -40,6 +35,7 @@
 <script>
 import Panel from './Panel.vue';
 import WalletModal from './wallet.vue';
+import { EventBus } from '../common/eventBus.js';
 
 export default {
   data() {
@@ -78,13 +74,19 @@ export default {
         console.error('Error with WalletConnect:', error);
       }
     },
+    handleFollowTabClick() {
+      EventBus.$emit('userScreenModeChanged', "Follow");
+    },
+    handleNewTabClick() {
+      EventBus.$emit('userScreenModeChanged', "New");
+    },
   },
   components: {
     Panel,
     WalletModal
   },
   created() {
-    this.$router.push('/main2') 
+    this.$router.push('/main2')
   },
   mounted() {
     this.$refs.walletModal.checkIfWalletIsConnected();

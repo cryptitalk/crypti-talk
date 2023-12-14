@@ -53,6 +53,8 @@
 import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
 import LikeButton from '../../components/LikeButton.vue';
+import { EventBus } from '../../common/eventBus.js';
+
 const response = require('../../common/disgoods.json')
 export default {
     data() {
@@ -61,10 +63,12 @@ export default {
             isLoadingMoreData: false, // Flag to indicate if more data is being loaded
             isRefreshData: false, // Flag to indicate if more data is being loaded
             isInitiated: false,
+            screenMode: "New",
         }
     },
     components: {
-        LikeButton
+        LikeButton,
+        EventBus,
     },
     computed: {
         ...mapGetters([
@@ -167,6 +171,13 @@ export default {
                     this.isLoadingMoreData = false; // Reset flag in case of error
                 });
         },
+    },
+    mounted() {
+        EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
+            this.screenMode = newUserScreenMode;
+            console.log(this.screenMode)
+        });
+        
     },
     created() {
         var history = this.getQueueAsString();
