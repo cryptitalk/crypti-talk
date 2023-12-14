@@ -86,6 +86,8 @@ export default {
             message += "search point: " + this.user.search + "\n"
             message += "like point: " + this.user.like + "\n"
             message += "comment point: " + this.user.comment + "\n"
+            message += "followers point: " + this.user.followers + "\n"
+            message += "following point: " + this.user.following + "\n"
             this.showToast(message);
         },
         showToast(message) {
