@@ -29,7 +29,7 @@
               <div class="user-item">
                 <img :src="item.pfp || 'https://storage.googleapis.com/cryptitalk/avatar.png'" alt="User Profile Image"
                   class="user-profile-image" />
-                <span class="username">{{ item.username }}</span>
+                <span class="username">{{ trimmedUsername(item.username) }}</span>
                 <button @click="followUser(item)" class="follow-button" :class="{ 'unfollow-button': item.followed }">
                   {{ item.followed ? 'Unfollow' : 'Follow' }}
                 </button>
@@ -133,6 +133,13 @@ export default {
     switchTab(tabName) {
       this.activeTab = tabName;
       this.currentPage = 1;
+    },
+    trimmedUsername(username) {
+      const screenWidth = window.innerWidth; 
+      if (screenWidth <= 768) {
+        return username.length > 7 ? username.slice(0, 7) + '...' : username;
+      }
+      return username;
     },
     previousPage() {
       if (this.activeTab === 'followers') {
@@ -298,10 +305,32 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Add a transition for smooth color change */
+  transition: background-color 0.3s;
+  /* Add a transition for smooth color change */
 }
 
 .unfollow-button {
-  background-color: red; /* Change the background color to red for Unfollow */
+  background-color: red;
+  /* Change the background color to red for Unfollow */
+}
+
+@media (max-width: 768px) {
+  .modal-tabs {
+    display: flex;
+    flex-direction: column;
+    /* Stack tabs vertically on smaller screens */
+    align-items: center;
+    /* Center-align the tabs */
+  }
+
+  .tab {
+    width: 80%;
+    /* Make tabs occupy full width */
+    text-align: center;
+    /* Center-align tab text */
+    margin-bottom: 10px;
+    /* Add space between tabs */
+    font-size: 14px;
+  }
 }
 </style>
