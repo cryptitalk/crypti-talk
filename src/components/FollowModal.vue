@@ -121,6 +121,7 @@ export default {
         this.recommendedBots = data.recommended_bots;
         this.followingList = data.following;
         this.followersList = data.followers;
+        this.updateItemsPerPage();
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -140,6 +141,10 @@ export default {
         return username.length > 7 ? username.slice(0, 7) + '...' : username;
       }
       return username;
+    },
+    updateItemsPerPage() {
+      const screenWidth = window.innerWidth;
+      this.itemsPerPage = screenWidth <= 768 ? 5 : 10;
     },
     previousPage() {
       if (this.activeTab === 'followers') {
