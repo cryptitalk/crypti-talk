@@ -9,20 +9,19 @@
         <div class="nav_left">
           <img src="../assets/wm.png" @click="popupVisible = true">
         </div>
-        
         <div class="nav_center">
-          <!--
           <ul class="nav_tab">
             <li class="tab-item">
-              <a @click="handleFollowTabClick">follow</a>
+              <a @click="handleFrensTabClick">Frens</a>
             </li>
             <li class="tab-item">
-              <a @click="handleNewTabClick">new</a>
+              <a @click="handleBotsTabClick">Bots</a>
+            </li>
+            <li class="tab-item">
+              <a @click="handleNewTabClick">News</a>
             </li>
           </ul>
-          -->
         </div>
-        
         <div class="nav_right">
           <w3m-button label="Connect" balance="hide" size="sm">Connect</w3m-button>
         </div>
@@ -78,8 +77,11 @@ export default {
         console.error('Error with WalletConnect:', error);
       }
     },
-    handleFollowTabClick() {
-      EventBus.$emit('userScreenModeChanged', "Follow");
+    handleFrensTabClick() {
+      EventBus.$emit('userScreenModeChanged', "Frens");
+    },
+    handleBotsTabClick() {
+      EventBus.$emit('userScreenModeChanged', "Bots");
     },
     handleNewTabClick() {
       EventBus.$emit('userScreenModeChanged', "New");
@@ -254,6 +256,12 @@ export default {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  transition: background-color 0.3s; /* Add transition for hover effect */
+}
+
+.app .nav .nav_center .nav_tab .tab-item:hover {
+  background-color: #e0e0e0; /* Change background color on hover */
+  cursor: pointer; /* Optional: Change cursor on hover */
 }
 
 .app .nav .nav_right {

@@ -51,6 +51,7 @@ export default {
       isLoadingMoreData: false, // Flag to indicate if more data is being loaded
       isRefreshData: false, // Flag to indicate if more data is being loaded
       isInitiated: false,
+      screenMode: 'New',
     }
   },
   components: {
@@ -86,6 +87,22 @@ export default {
         case 4: return this.list4;
         case 5: return this.list5;
         default: return [];
+      }
+    },
+    resetQueue() {
+      if (this.screenMode === 'Frens') {
+        this.$purgeQueue();
+        this.addItemToQueue(-1);
+        this.addItemToQueue(global.connectedAccount);
+      } else if (this.screenMode === 'Bots') {
+        this.$purgeQueue();
+        this.addItemToQueue(-2);
+        this.addItemToQueue(global.connectedAccount);
+      } else if (this.screenMode === 'New') {
+        var str = this.$queueToString()
+        if (str.startsWith("search") || str.startsWith("-1") || str.startsWith("-2")) {
+          this.$purgeQueue();
+        }
       }
     },
     addItemToQueue(item) {
@@ -147,21 +164,20 @@ export default {
       return config
     },
     refreshData() {
-      // Logic to refresh data when scrolled to the top
-      console.log("Refreshing data...");
+      this.resetQueue();
       // Implement your data refreshing logic here
-      /*
       var history = this.getQueueAsString();
-      axios.get(`/explore/${history}`).then(res => {
+      axios.get(`/explore/${history}`, this.getAuthConfig()).then(res => {
         this.$store.dispatch('getDiscoverys5', res.data.discoveryList);
         this.isRefreshData = false; // Reset flag
       }).catch(error => {
         console.error("Error loading more data:", error);
         this.isRefreshData = false; // Reset flag in case of error
-      });*/
+      });
     },
 
     loadMoreData() {
+      this.resetQueue();
       var history = this.getQueueAsString();
       console.log("Loading more data...", history);
       axios.get(`/explore/${history}`, this.getAuthConfig())
@@ -178,6 +194,8 @@ export default {
   mounted() {
     EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
       this.screenMode = newUserScreenMode;
+      this.isRefreshData = true
+      this.refreshData();
     });
     console.log(this.screenMode)
   },

@@ -143,6 +143,7 @@ export default {
             return config
         },
         refreshData() {
+            this.resetQueue();
             // Logic to refresh data when scrolled to the top
             console.log("Refreshing data...");
             // Implement your data refreshing logic here
@@ -157,7 +158,6 @@ export default {
                     this.isRefreshData = false; // Reset flag in case of error
                 });
         },
-
         loadMoreData() {
             var history = this.getQueueAsString();
             console.log("Loading more data...", history);
@@ -171,13 +171,30 @@ export default {
                     this.isLoadingMoreData = false; // Reset flag in case of error
                 });
         },
+        resetQueue() {
+            if (this.screenMode === 'Frens') {
+                this.$purgeQueue();
+                this.addItemToQueue(-1);
+                this.addItemToQueue(global.connectedAccount);
+            } else if (this.screenMode === 'Bots') {
+                this.$purgeQueue();
+                this.addItemToQueue(-2);
+                this.addItemToQueue(global.connectedAccount);
+            } else if (this.screenMode === 'New') {
+                var str = this.$queueToString()
+                if (str.startsWith("search") || str.startsWith("-1") || str.startsWith("-2")) {
+                    this.$purgeQueue();
+                }
+            }
+        },
     },
     mounted() {
         EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
             this.screenMode = newUserScreenMode;
-            console.log(this.screenMode)
+            this.isRefreshData = true
+            this.refreshData();
         });
-        
+        console.log(this.screenMode)
     },
     created() {
         var history = this.getQueueAsString();
