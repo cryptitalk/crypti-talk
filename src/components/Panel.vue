@@ -17,6 +17,15 @@
                 </div>
             </div>
 
+            <div class="con_item" @click="showPostModal">
+                <div class="img">
+                    <img src="../assets/icon3.png" alt="post">
+                </div>
+                <div class="text">
+                    <span>Add Post</span>
+                </div>
+            </div>
+
             <div class="con_item" @click="showFollowModal">
                 <div class="img">
                     <img src="../assets/transmit.png" alt="Follow">
@@ -47,6 +56,8 @@
                 @save-changes="handleSaveProfileChanges"></EditProfileModal>
             <FollowModal v-if="isFollowModalVisible" @close="hideFollowModal"
                 @save-changes="handleSaveProfileChanges"></FollowModal>
+            <PostModal v-if="isPostModalVisible" @close="hidePostModal"
+                @save-changes="handleSaveProfileChanges"></PostModal>
         </div>
     </div>
 </template>
@@ -54,6 +65,7 @@
 import { EventBus } from '../common/eventBus.js';
 import EditProfileModal from "./EditProfileModal.vue";
 import FollowModal from "./FollowModal.vue";
+import PostModal from "./PostModal.vue";
 
 export default {
     data() {
@@ -63,11 +75,13 @@ export default {
             userName: global.userName,
             isEditProfileModalVisible: false,
             isFollowModalVisible: false,
+            isPostModalVisible: false,
         }
     },
     components: {
         EditProfileModal,
-        FollowModal
+        FollowModal,
+        PostModal,
     },
     mounted() {
         this.fetchUserData();
@@ -112,11 +126,17 @@ export default {
         showFollowModal() {
             this.isFollowModalVisible = true;
         },
+        showPostModal() {
+            this.isPostModalVisible = true;
+        },
         hideEditProfileModal() {
             this.isEditProfileModalVisible = false;
         },
         hideFollowModal() {
             this.isFollowModalVisible = false;
+        },
+        hidePostModal() {
+            this.isPostModalVisible = false;
         },
         handleSaveProfileChanges(profileData) {
             // Handle saving changes to the user's profile here
