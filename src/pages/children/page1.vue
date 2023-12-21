@@ -83,9 +83,9 @@ export default {
     methods: {
         selectedNote(item) {
             lastScrollY = this.pageScroll.y;
-            this.$store.dispatch('getNote', item)
+            //this.$store.dispatch('getNote', item)
             this.addItemToQueue(item.id)
-            this.$router.push('/note')
+            this.$router.push('/note/'+item.id)
         },
         addItemToQueue(item) {
             this.$updateQueue(item);

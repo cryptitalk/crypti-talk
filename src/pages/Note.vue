@@ -71,6 +71,7 @@ import BScroll from 'better-scroll'
 import { mapGetters } from 'vuex'
 import CommentModal from '../components/CommentModal.vue'
 import { authMixin } from '../common/authMixin.js'
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -79,6 +80,7 @@ export default {
         paginationType: 'fraction',
       },
       showCommentBox: false,
+      id: 0
     }
   },
   mixins: [authMixin],
@@ -142,6 +144,15 @@ export default {
         this.showCommentBox = false;
       });
     },
+    fetchNoteData(id) {
+      axios.get(`/note/${id}`)
+        .then(response => {
+          this.$store.dispatch('getNote', response.data)
+        })
+        .catch(error => {
+          console.error('Failed to fetch note data:', error)
+        })
+    },
     _initScroll() {
       const isMobile = this.isMobileDevice();
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
@@ -164,6 +175,8 @@ export default {
     CommentModal,
   },
   created() {
+    this.id = this.$route.params.id
+    this.fetchNoteData(this.id)
     if (this.$store.state.isNav) {
       this.$store.dispatch('isNav')
     }

@@ -74,7 +74,7 @@ export default new Router({
       component: search
     },
     {
-      path: '/note',
+      path: '/note/:id',
       name: 'note',
       component: note
     },

@@ -92,7 +92,7 @@ export default {
     WalletModal
   },
   created() {
-    this.$router.push('/main2')
+    //this.$router.push('/main2')
   },
   mounted() {
     this.$refs.walletModal.checkIfWalletIsConnected();
