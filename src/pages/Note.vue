@@ -90,11 +90,23 @@ export default {
     ]),
     linkedDescription() {
       if (!this.note.desc) return '';
-      // A basic regex pattern to match URLs (you may want to use a more robust pattern or library)
+      // A basic regex pattern to match URLs
       const urlPattern = /(\bhttps?:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-      return this.note.desc.replace(urlPattern, (url) => {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-      });
+
+      // Escape HTML to prevent XSS attacks or unwanted HTML rendering
+      const escapeHtml = (text) => {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      };
+
+      // First escape HTML, then replace URLs with anchor tags and newlines with <br>
+      return escapeHtml(this.note.desc)
+        .replace(urlPattern, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`)
+        .replace(/\n/g, '<br>'); // Replace newlines with <br>
     },
     parsedLinks() {
       try {
