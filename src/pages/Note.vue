@@ -177,9 +177,9 @@ export default {
   created() {
     this.id = this.$route.params.id
     this.fetchNoteData(this.id)
-    if (this.$store.state.isNav) {
-      this.$store.dispatch('isNav')
-    }
+    //if (this.$store.state.isNav) {
+    //  this.$store.dispatch('isNav')
+    //}
     this.$nextTick(() => {
       this._initScroll()
     })
@@ -196,7 +196,7 @@ export default {
 <style scoped>
 .note_page {
   width: 100%;
-  top: 0;
+  top: 1.5rem;
   bottom: 0;
   background: #fff;
   overflow: hidden;
