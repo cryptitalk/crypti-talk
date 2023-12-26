@@ -52,13 +52,7 @@
           </div>
         </div>
         <div class="comments_container">
-          <div class="comment" v-for="(comment, index) in note.comments" :key="index">
-            <div class="comment_user">
-              <img :src="comment.Avatar" alt="User avatar" class="user_avatar">
-              <span class="user_name">{{ comment.UserName }}</span>
-            </div>
-            <div class="comment_text">{{ comment.Content }}</div>
-          </div>
+          <comments-container v-if="note.comments" :comments="note.comments" @submitReply="handleReplySubmit" />
         </div>
       </div>
     </div>
@@ -72,6 +66,7 @@ import { mapGetters } from 'vuex'
 import CommentModal from '../components/CommentModal.vue'
 import { authMixin } from '../common/authMixin.js'
 import axios from 'axios'
+import CommentsContainer from '../components/CommentsContainer.vue';
 export default {
   data() {
     return {
@@ -141,8 +136,8 @@ export default {
     isMobileDevice() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
-    handleCommentSubmit(commentText) {
-      const commentData = { itemId: this.note.id, content: commentText };
+    handleCommentSubmit(commentText, commentID) {
+      const commentData = { itemId: this.note.id, content: commentText, commentID: commentID };
       axios.post('/useraction', commentData, this.getAuthConfig()).then(response => {
         console.log('Comment data updated on backend', response.data);
         if (!this.note.comments) {
@@ -154,6 +149,21 @@ export default {
         console.error('Error updating like data', error);
         alert('Failed to post comment. Please try again.');
         this.showCommentBox = false;
+      });
+    },
+    handleReplySubmit(comment, commentID) {
+      const commentData = { itemId: this.note.id, content: comment.newReplyContent, commentID: commentID };
+      axios.post('/useraction', commentData, this.getAuthConfig()).then(response => {
+        console.log('Comment data updated on backend', response.data);
+        if (!comment.Replies) {
+          this.$set(comment, 'Replies', []);
+        }
+        comment.Replies.push(response.data);
+        comment.showForm = false;
+      }).catch(error => {
+        console.error('Error updating like data', error);
+        alert('Failed to post comment. Please try again.');
+        comment.showForm = false;
       });
     },
     fetchNoteData(id) {
@@ -185,6 +195,7 @@ export default {
     swiper,
     swiperSlide,
     CommentModal,
+    CommentsContainer,
   },
   created() {
     this.id = this.$route.params.id
@@ -385,31 +396,6 @@ export default {
   padding: 10px;
 }
 
-.comment {
-  border-bottom: 1px solid #e6e6e6;
-  padding: 10px 0;
-}
-
-.comment_user {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.user_avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.user_name {
-  font-weight: bold;
-}
-
-.comment_text {
-  font-size: 0.35rem;
-}
 
 @media (min-width: 1024px) {
 

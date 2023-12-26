@@ -17,7 +17,7 @@ export default {
     },
     methods: {
         submitComment() {
-            this.$emit('submit', this.newComment);
+            this.$emit('submit', this.newComment, -1); // -1 means it's a top-level comment
             this.newComment = ''; // Reset the comment
         }
     }
