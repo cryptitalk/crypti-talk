@@ -26,6 +26,7 @@
             <div>{{ note.uname }}</div>
           </div>
           <div class="btn">
+            <button class="follow-btn" @click="followUser">{{ followButtonText }}</button>
             <button @click="showCommentBox = true">＋comment</button>
           </div>
           <comment-modal v-if="showCommentBox" @submit="handleCommentSubmit" @close="showCommentBox = false" />
@@ -75,7 +76,11 @@ export default {
         paginationType: 'fraction',
       },
       showCommentBox: false,
-      id: 0
+      id: 0,
+      isFollowing: false,
+      authorId: -1,
+      checkFollowingInterval: null,
+      checkFollowingCnt: 60,
     }
   },
   mixins: [authMixin],
@@ -119,6 +124,9 @@ export default {
         console.error('Failed to parse links:', e);
         return null;
       }
+    },
+    followButtonText() {
+      return this.isFollowing ? '-Unfollow' : '+Follow';
     },
   },
   methods: {
@@ -167,9 +175,13 @@ export default {
       });
     },
     fetchNoteData(id) {
-      axios.get(`/note/${id}`)
+      axios.get(`/note/${id}`, this.getAuthConfig())
         .then(response => {
           this.$store.dispatch('getNote', response.data)
+          this.authorId = response.data.userid;
+          if (global.connectedAccount !== null) {
+            this.checkFollowing();
+          }
         })
         .catch(error => {
           console.error('Failed to fetch note data:', error)
@@ -189,6 +201,35 @@ export default {
         return `http://${url}`;
       }
       return url;
+    },
+    async followUser() {
+      try {
+        const apiUrl = '/useraction';
+        const requestData = {
+          follow: !this.isFollowing,
+          following: this.authorId,
+        };
+        const response = await axios.post(apiUrl, requestData, this.getAuthConfig());
+        if (response.status === 200) {
+        } else {
+          console.error('Follow request failed');
+        }
+      } catch (error) {
+        console.error('Error following user:', error);
+      }
+      this.isFollowing = !this.isFollowing;
+    },
+    async checkFollowing() {
+      if (this.checkFollowingCnt < 0) {
+        return;
+      }
+      this.checkFollowingCnt--;
+      axios.get(`/isfollowing/${this.authorId}`, this.getAuthConfig())
+        .then(res => {
+          this.isFollowing = res.data.isFollowing;
+        }).catch(error => {
+          console.error('Error following user:', error);
+        });
     }
   },
   components: {
@@ -206,6 +247,11 @@ export default {
     this.$nextTick(() => {
       this._initScroll()
     })
+    this.checkFollowingInterval = setInterval(this.checkFollowing, 1000);
+  },
+  beforeDestroy() {
+    // Clear the interval when the component is destroyed to prevent memory leaks
+    clearInterval(this.checkFollowingInterval);
   },
   watch: {
     '$route'() {
@@ -344,6 +390,29 @@ export default {
   /* Optional: Adjust the border color if needed */
   cursor: pointer;
   /* Change cursor to indicate it's clickable */
+}
+
+.follow-btn {
+  margin-right: 0.2rem;
+  /* Adjust the margin as needed */
+  padding: 5px 10px;
+  background-color: #2894FF;
+  /* Blue background for the follow button */
+  color: white;
+  /* White text */
+  border: none;
+  /* No border */
+  border-radius: 4px;
+  /* Rounded corners */
+  cursor: pointer;
+  /* Clickable cursor icon */
+  font-size: 0.30rem;
+  /* Match font size with your design */
+}
+
+.follow-btn:hover {
+  background-color: #1F7AFF;
+  /* Slightly darker blue on hover */
 }
 
 .common-style {
