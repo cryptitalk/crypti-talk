@@ -51,7 +51,7 @@ export default {
       isLoadingMoreData: false, // Flag to indicate if more data is being loaded
       isRefreshData: false, // Flag to indicate if more data is being loaded
       isInitiated: false,
-      screenMode: 'New',
+      screenMode: 'None',
     }
   },
   components: {
@@ -191,19 +191,16 @@ export default {
         });
     },
   },
-  mounted() {
-    EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
-      this.screenMode = newUserScreenMode;
-      this.isRefreshData = true
-      this.refreshData();
-    });
-    console.log(this.screenMode)
+  mounted() {   
   },
   created() {
+    this.screenMode = this.$route.query.userScreenModeChanged;
+    this.resetQueue();
     var history = this.getQueueAsString();
     console.log("history is: ", history)
     var historyArray = history.split(',');
-    if (historyArray.length > 0 && historyArray[0] === 'search') {
+    if ((historyArray.length > 0 && historyArray[0] === 'search') ||
+    this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New'  ) {
       this.$store.dispatch('clearData5');
       isInitiated = false;
       this.isRefreshData = true
@@ -218,7 +215,7 @@ export default {
         }
         this.$nextTick(() => {
           this._initScroll();
-          this.restoreScrollPosition();
+          //this.restoreScrollPosition();
         })
       })
   }

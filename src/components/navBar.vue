@@ -78,13 +78,14 @@ export default {
       }
     },
     handleFrensTabClick() {
-      EventBus.$emit('userScreenModeChanged', "Frens");
+      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Frens" } });
     },
     handleBotsTabClick() {
       EventBus.$emit('userScreenModeChanged', "Bots");
+      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Bots" } });
     },
     handleNewTabClick() {
-      EventBus.$emit('userScreenModeChanged', "New");
+      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "New" } });
     },
   },
   components: {
