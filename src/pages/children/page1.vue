@@ -63,7 +63,7 @@ export default {
             isLoadingMoreData: false, // Flag to indicate if more data is being loaded
             isRefreshData: false, // Flag to indicate if more data is being loaded
             isInitiated: false,
-            screenMode: "New",
+            screenMode: "None",
         }
     },
     components: {
@@ -85,7 +85,7 @@ export default {
             lastScrollY = this.pageScroll.y;
             //this.$store.dispatch('getNote', item)
             this.addItemToQueue(item.id)
-            this.$router.push('/note/'+item.id)
+            this.$router.push('/note/' + item.id)
         },
         addItemToQueue(item) {
             this.$updateQueue(item);
@@ -189,17 +189,14 @@ export default {
         },
     },
     mounted() {
-        EventBus.$on('userScreenModeChanged', (newUserScreenMode) => {
-            this.screenMode = newUserScreenMode;
-            this.isRefreshData = true
-            this.refreshData();
-        });
-        console.log(this.screenMode)
     },
     created() {
+        this.screenMode = this.$route.query.userScreenModeChanged;
+        this.resetQueue();
         var history = this.getQueueAsString();
         var historyArray = history.split(',');
-        if (historyArray.length > 0 && historyArray[0] === 'search') {
+        if ((historyArray.length > 0 && historyArray[0] === 'search') ||
+            this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New') {
             this.$store.dispatch('clearData');
             this.isRefreshData = true
             isInitiated = false;
@@ -214,7 +211,7 @@ export default {
                 }
                 this.$nextTick(() => {
                     this._initScroll();
-                    this.restoreScrollPosition();
+                    //this.restoreScrollPosition();
                 })
             })
     }

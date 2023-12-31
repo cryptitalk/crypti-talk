@@ -78,14 +78,28 @@ export default {
       }
     },
     handleFrensTabClick() {
-      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Frens" } });
+      const isDesktop = window.innerWidth >= 1024;
+      if (isDesktop) {
+        this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Frens" } });
+      } else {
+        this.$router.push({ path: '/main2/page1', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Frens" } });
+      }
     },
     handleBotsTabClick() {
-      EventBus.$emit('userScreenModeChanged', "Bots");
-      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Bots" } });
+      const isDesktop = window.innerWidth >= 1024;
+      if (isDesktop) {
+        this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Bots" } });
+      } else {
+        this.$router.push({ path: '/main2/page1', query: { timestamp: new Date().getTime(), userScreenModeChanged: "Bots" } });
+      }
     },
     handleNewTabClick() {
-      this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "New" } });
+      const isDesktop = window.innerWidth >= 1024;
+      if (isDesktop) {
+        this.$router.push({ path: '/main2/page2', query: { timestamp: new Date().getTime(), userScreenModeChanged: "New" } });
+      } else {
+        this.$router.push({ path: '/main2/page1', query: { timestamp: new Date().getTime(), userScreenModeChanged: "New" } });
+      }
     },
   },
   components: {
