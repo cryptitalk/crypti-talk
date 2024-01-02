@@ -54,10 +54,11 @@
             <!-- Edit Profile Modal -->
             <EditProfileModal v-if="isEditProfileModalVisible" @close="hideEditProfileModal"
                 @save-changes="handleSaveProfileChanges"></EditProfileModal>
-            <FollowModal v-if="isFollowModalVisible" @close="hideFollowModal"
-                @save-changes="handleSaveProfileChanges"></FollowModal>
-            <PostModal v-if="isPostModalVisible" @close="hidePostModal"
-                @save-changes="handleSaveProfileChanges"></PostModal>
+            <FollowModal v-if="isFollowModalVisible" @close="hideFollowModal" @save-changes="handleSaveProfileChanges">
+            </FollowModal>
+            <PostModal v-if="isPostModalVisible" @close="hidePostModal" @save-changes="handleSaveProfileChanges">
+            </PostModal>
+            <EntropyPopup :visible="isEntropyPopupVisible" :data="entropyData" @close="isEntropyPopupVisible = false" />
         </div>
     </div>
 </template>
@@ -66,6 +67,7 @@ import { EventBus } from '../common/eventBus.js';
 import EditProfileModal from "./EditProfileModal.vue";
 import FollowModal from "./FollowModal.vue";
 import PostModal from "./PostModal.vue";
+import EntropyPopup from './EntropyPopup.vue';
 
 export default {
     data() {
@@ -76,12 +78,15 @@ export default {
             isEditProfileModalVisible: false,
             isFollowModalVisible: false,
             isPostModalVisible: false,
+            isEntropyPopupVisible: false,
+            entropyData: {},
         }
     },
     components: {
         EditProfileModal,
         FollowModal,
         PostModal,
+        EntropyPopup,
     },
     mounted() {
         this.fetchUserData();
@@ -95,14 +100,17 @@ export default {
     methods: {
         async handleEntropyClick() {
             await this.fetchUserData();
-            let message = "user: " + global.connectedAccount + "\n"
-            message += "browsing point: " + this.user.browsing + "\n"
-            message += "search point: " + this.user.search + "\n"
-            message += "like point: " + this.user.like + "\n"
-            message += "comment point: " + this.user.comment + "\n"
-            message += "followers point: " + this.user.followers + "\n"
-            message += "following point: " + this.user.following + "\n"
-            this.showToast(message);
+            this.entropyData = {
+                user: global.connectedAccount,
+                browsing_point: this.user.browsing,
+                search_point: this.user.search,
+                like_point: this.user.like,
+                comment_point: this.user.comment,
+                followers_point: this.user.followers,
+                following_point: this.user.following,
+                is_daily_active: this.user.is_daily_active,
+            };
+            this.isEntropyPopupVisible = true;
         },
         showToast(message) {
             alert(message);
