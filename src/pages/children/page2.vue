@@ -117,7 +117,8 @@ export default {
       this.pageScroll = new BScroll(this.$refs.disWrapper, {
         click: true,
         mouseWheel: !isMobile,
-        probeType: 3 // Enable listening to the scroll event
+        probeType: 3, // Enable listening to the scroll event
+        preventDefault: false, // TODO just enable on desktop
       });
 
       this.pageScroll.on('scroll', (position) => {
@@ -235,6 +236,7 @@ export default {
   left: 50%; /* Positioned 50% from the left of the screen */
   transform: translateX(-50%); /* Shifts the element to the left by half its own width */
   display: flex;
+  user-select: text;
 }
 
 .content-area {

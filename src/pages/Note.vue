@@ -192,7 +192,8 @@ export default {
       this.noteScroll = new BScroll(this.$refs.noteWrapper, {
         click: true,
         mouseWheel: !isMobile,
-        probeType: true
+        probeType: true,
+        preventDefault: isMobile, // TODO just enable on desktop
       })
     },
     formatUrl(url) {
@@ -270,6 +271,7 @@ export default {
   background: #fff;
   overflow: hidden;
   position: absolute;
+  user-select: text;
 }
 
 .move-enter-active,
