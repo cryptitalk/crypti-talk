@@ -5,8 +5,17 @@
                 <img :src="userImage" alt="user image">
             </div>
         </div>
-        <div class="user-name">{{ userName }}</div>
-
+        <div class="user-info">
+            <div class="user-name">{{ userName }}</div>
+            <div class="follower-info">
+                <span class="label">Followers:</span>
+                <span class="follower-count">{{ user.followers || 0 }}</span>
+            </div>
+            <div class="following-info">
+                <span class="label">Following:</span>
+                <span class="following-count">{{ user.following || 0 }}</span>
+            </div>
+        </div>
         <div class="content">
             <div class="con_item" @click="handleEntropyClick">
                 <div class="img">
@@ -72,7 +81,10 @@ import EntropyPopup from './EntropyPopup.vue';
 export default {
     data() {
         return {
-            user: [],
+            user: {
+                followers: 0, // Initiate with a default value
+                following: 0, // Initiate with a default value
+            },
             userImage: global.userImg,
             userName: global.userName,
             isEditProfileModalVisible: false,
@@ -92,6 +104,7 @@ export default {
         this.fetchUserData();
         EventBus.$on('userImgChanged', (newImageURL) => {
             this.userImage = newImageURL;
+            // TODO add user follow / follower cnt
         });
         EventBus.$on('userNameChanged', (newUserName) => {
             this.userName = newUserName;
@@ -121,8 +134,6 @@ export default {
                 if (global.connectedAccount != '') {
                     const response = await axios.get(`/validuser/${global.connectedAccount}`);
                     this.user = response.data;
-                } else {
-                    this.user = []
                 }
             } catch (error) {
                 console.error('There was an error fetching the user data:', error);
@@ -189,10 +200,31 @@ export default {
     border-radius: 50%;
 }
 
+.user-info {
+    display: flex;
+    flex-direction: column; // Align children vertically
+    align-items: center; // Center-align the children
+    padding-bottom: 10px; // Some space at the bottom
+}
+
 .user-name {
-    /* Apply styling to the user name */
     font-size: 18px;
     font-weight: bold;
+    margin-bottom: 5px; // A small margin above follower/following info
+}
+
+.follower-info, .following-info {
+    margin-bottom: 3px; // A small margin between follower and following info
+}
+
+.label {
+    margin-right: 5px; // Space between label and count
+    font-weight: 600; // Slightly bolder than the count to highlight the label
+}
+
+.follower-count, .following-count {
+    font-size: 14px;
+    color: #555; // Darker text color for counts
 }
 
 .content {
