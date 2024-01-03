@@ -101,12 +101,12 @@ export default {
         EntropyPopup,
     },
     mounted() {
-        this.fetchUserData();
         EventBus.$on('userImgChanged', (newImageURL) => {
             this.userImage = newImageURL;
             // TODO add user follow / follower cnt
         });
         EventBus.$on('userNameChanged', (newUserName) => {
+            this.fetchUserData();
             this.userName = newUserName;
         });
     },
