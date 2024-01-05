@@ -52,6 +52,8 @@ export default {
       isRefreshData: false, // Flag to indicate if more data is being loaded
       isInitiated: false,
       screenMode: 'None',
+      numPerPage: 20,
+      pageNum: 1,
     }
   },
   components: {
@@ -76,8 +78,8 @@ export default {
     selectedNote(item) {
       lastScrollY = this.pageScroll.y;
       //this.$store.dispatch('getNote', item)
-      this.addItemToQueue(item.id)
-      this.$router.push('/note/'+item.id)
+      //this.addItemToQueue(item.id)
+      this.$router.push('/note/' + item.id)
     },
     getItemsForColumn(columnNumber) {
       switch (columnNumber) {
@@ -110,7 +112,27 @@ export default {
       console.log(this.$queue);
     },
     getQueueAsString() {
-      return this.$queueToString();
+      let ret = "0," + this.numPerPage + "," + this.pageNum;
+
+      if (this.screenMode === 'New' || this.screenMode === 'None') {
+        ret = "0," + this.numPerPage + "," + this.pageNum;
+      } else if (this.screenMode === undefined || this.screenMode === 'Search') {
+        ret = this.$queueToString();
+      } else if (this.screenMode === 'Frens') {
+        ret = "2," + this.numPerPage + "," + this.pageNum;
+      } else if (this.screenMode === 'Bots') {
+        ret = "3," + this.numPerPage + "," + this.pageNum;
+      }
+      let components = ret.split(",");
+      let firstElement = components[0];
+
+      if (firstElement === '1') {
+        ret = firstElement + "," + this.numPerPage + "," + this.pageNum + components.slice(1).join(",");
+        this.screenMode = 'Search';
+      } else if (firstElement === '0') {
+        ret = firstElement + "," + this.numPerPage + "," + this.pageNum
+      }
+      return ret;
     },
     _initScroll() {
       const isMobile = this.isMobileDevice();
@@ -165,12 +187,12 @@ export default {
       return config
     },
     refreshData() {
-      this.resetQueue();
       // Implement your data refreshing logic here
       var history = this.getQueueAsString();
       axios.get(`/explore/${history}`, this.getAuthConfig()).then(res => {
         this.$store.dispatch('getDiscoverys5', res.data.discoveryList);
         this.isRefreshData = false; // Reset flag
+        this.pageNum += 1;
       }).catch(error => {
         console.error("Error loading more data:", error);
         this.isRefreshData = false; // Reset flag in case of error
@@ -178,30 +200,28 @@ export default {
     },
 
     loadMoreData() {
-      this.resetQueue();
       var history = this.getQueueAsString();
       console.log("Loading more data...", history);
       axios.get(`/explore/${history}`, this.getAuthConfig())
         .then(res => {
           this.$store.dispatch('appendDiscovery5', res.data.discoveryList);
           this.isLoadingMoreData = false; // Reset flag
-          this.$purgeQueue();
+          this.pageNum += 1;
         }).catch(error => {
           console.error("Error loading more data:", error);
           this.isLoadingMoreData = false; // Reset flag in case of error
         });
     },
   },
-  mounted() {   
+  mounted() {
   },
   created() {
     this.screenMode = this.$route.query.userScreenModeChanged;
-    this.resetQueue();
+    this.searchKey = this.$route.query.searchKey;
     var history = this.getQueueAsString();
-    console.log("history is: ", history)
-    var historyArray = history.split(',');
-    if ((historyArray.length > 0 && historyArray[0] === 'search') ||
-    this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New'  ) {
+    console.log("history is: ", history, "screenMode is: ", this.screenMode)
+    if (this.screenMode == 'Search' ||
+      this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New') {
       this.$store.dispatch('clearData5');
       isInitiated = false;
       this.isRefreshData = true
@@ -212,7 +232,7 @@ export default {
           this.$store.dispatch('getDiscoverys5', res.data.discoveryList)
           isInitiated = true
           this.isRefreshData = false
-          this.$purgeQueue();
+          this.pageNum += 1;
         }
         this.$nextTick(() => {
           this._initScroll();

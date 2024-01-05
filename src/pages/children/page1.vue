@@ -64,6 +64,8 @@ export default {
             isRefreshData: false, // Flag to indicate if more data is being loaded
             isInitiated: false,
             screenMode: "None",
+            numPerPage: 20,
+            pageNum: 1,
         }
     },
     components: {
@@ -84,7 +86,7 @@ export default {
         selectedNote(item) {
             lastScrollY = this.pageScroll.y;
             //this.$store.dispatch('getNote', item)
-            this.addItemToQueue(item.id)
+            //this.addItemToQueue(item.id)
             this.$router.push('/note/' + item.id)
         },
         addItemToQueue(item) {
@@ -92,7 +94,27 @@ export default {
             console.log(this.$queue);
         },
         getQueueAsString() {
-            return this.$queueToString();
+            let ret = "0," + this.numPerPage + "," + this.pageNum;
+
+            if (this.screenMode === 'New' || this.screenMode === 'None') {
+                ret = "0," + this.numPerPage + "," + this.pageNum;
+            } else if (this.screenMode === undefined || this.screenMode === 'Search') {
+                ret = this.$queueToString();
+            } else if (this.screenMode === 'Frens') {
+                ret = "2," + this.numPerPage + "," + this.pageNum;
+            } else if (this.screenMode === 'Bots') {
+                ret = "3," + this.numPerPage + "," + this.pageNum;
+            }
+            let components = ret.split(",");
+            let firstElement = components[0];
+
+            if (firstElement === '1') {
+                ret = firstElement + "," + this.numPerPage + "," + this.pageNum + components.slice(1).join(",");
+                this.screenMode = 'Search';
+            } else if (firstElement === '0') {
+                ret = firstElement + "," + this.numPerPage + "," + this.pageNum
+            }
+            return ret;
         },
         _initScroll() {
             const isMobile = this.isMobileDevice();
@@ -143,16 +165,13 @@ export default {
             return config
         },
         refreshData() {
-            this.resetQueue();
-            // Logic to refresh data when scrolled to the top
-            console.log("Refreshing data...");
             // Implement your data refreshing logic here
             var history = this.getQueueAsString();
             axios.get(`/explore/${history}`, this.getAuthConfig())
                 .then(res => {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList);
                     this.isRefreshData = false; // Reset flag
-                    this.$purgeQueue();
+                    this.pageNum += 1;
                 }).catch(error => {
                     console.error("Error loading more data:", error);
                     this.isRefreshData = false; // Reset flag in case of error
@@ -165,41 +184,25 @@ export default {
                 .then(res => {
                     this.$store.dispatch('appendDiscovery', res.data.discoveryList);
                     this.isLoadingMoreData = false; // Reset flag
-                    this.$purgeQueue();
+                    this.pageNum += 1;
                 }).catch(error => {
                     console.error("Error loading more data:", error);
                     this.isLoadingMoreData = false; // Reset flag in case of error
                 });
-        },
-        resetQueue() {
-            if (this.screenMode === 'Frens') {
-                this.$purgeQueue();
-                this.addItemToQueue(-1);
-                this.addItemToQueue(global.connectedAccount);
-            } else if (this.screenMode === 'Bots') {
-                this.$purgeQueue();
-                this.addItemToQueue(-2);
-                this.addItemToQueue(global.connectedAccount);
-            } else if (this.screenMode === 'New') {
-                var str = this.$queueToString()
-                if (str.startsWith("search") || str.startsWith("-1") || str.startsWith("-2")) {
-                    this.$purgeQueue();
-                }
-            }
         },
     },
     mounted() {
     },
     created() {
         this.screenMode = this.$route.query.userScreenModeChanged;
-        this.resetQueue();
+        this.searchKey = this.$route.query.searchKey;
         var history = this.getQueueAsString();
-        var historyArray = history.split(',');
-        if ((historyArray.length > 0 && historyArray[0] === 'search') ||
+        console.log("history is: ", history, "screenMode is: ", this.screenMode)
+        if (this.screenMode == 'Search' ||
             this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New') {
             this.$store.dispatch('clearData');
-            this.isRefreshData = true
             isInitiated = false;
+            this.isRefreshData = true
         }
         axios.get(`/explore/${history}`, this.getAuthConfig())
             .then(res => {
@@ -207,7 +210,7 @@ export default {
                     this.$store.dispatch('getDiscoverys', res.data.discoveryList)
                     isInitiated = true
                     this.isRefreshData = false
-                    this.$purgeQueue();
+                    this.pageNum += 1;
                 }
                 this.$nextTick(() => {
                     this._initScroll();
