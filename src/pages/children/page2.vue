@@ -52,7 +52,7 @@ export default {
       isRefreshData: false, // Flag to indicate if more data is being loaded
       isInitiated: false,
       screenMode: 'None',
-      numPerPage: 20,
+      numPerPage: 30,
       pageNum: 1,
     }
   },
