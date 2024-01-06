@@ -35,7 +35,8 @@ const mutations = {
         state.all = data
     },
     [types.APPENDDISDATA](state, newData) {
-        state.all.push(...newData);
+        // TODO why this is not working?
+        //state.all.push(...newData);
     },
     [types.GETNOTE] (state, { value }) {
         state.choosedNote = value
