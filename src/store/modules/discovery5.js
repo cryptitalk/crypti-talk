@@ -20,7 +20,7 @@ const actions = {
         commit(types.INITDISDATA, { data })
     },
     appendDiscovery5({ commit }, newData) {
-        commit(types.APPENDDISDATA, newData);
+        commit(types.APPENDDISDATA5, newData);
     },
     getNote5 ({ commit }, value) {
         commit(types.GETNOTE,{ value })
@@ -34,9 +34,9 @@ const mutations = {
     [types.INITDISDATA] (state, { data }) {
         state.all = data
     },
-    [types.APPENDDISDATA](state, newData) {
+    [types.APPENDDISDATA5](state, newData) {
         // TODO why this is not working?
-        //state.all.push(...newData);
+        state.all.push(...newData);
     },
     [types.GETNOTE] (state, { value }) {
         state.choosedNote = value
