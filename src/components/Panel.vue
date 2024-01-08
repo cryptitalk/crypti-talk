@@ -2,7 +2,7 @@
     <div class="panel">
         <div class="header">
             <div class="user-image">
-                <img :src="userImage" alt="user image">
+                <img :src="userImage" alt="user image" @click="navigateTo(UserID)">
             </div>
         </div>
         <div class="user-info">
@@ -87,6 +87,7 @@ export default {
             },
             userImage: global.userImg,
             userName: global.userName,
+            UserID: global.userId,
             isEditProfileModalVisible: false,
             isFollowModalVisible: false,
             isPostModalVisible: false,
@@ -127,6 +128,16 @@ export default {
         },
         showToast(message) {
             alert(message);
+        },
+        navigateTo(userid) {
+            // Use Vue Router's push method to change the route
+            const isDesktop = window.innerWidth >= 1024;
+            global.userScreenModeChanged = "Profile;" + global.userId;
+            if (isDesktop) {
+                this.$router.push({ path: '/main2/page2', query: { userid: userid, userScreenModeChanged: "Profile;" + global.userId } });
+            } else {
+                this.$router.push({ path: '/main2/page1', query: { userid: userid, userScreenModeChanged: "Profile;" + global.userId } });
+            }
         },
         async fetchUserData() {
             try {
@@ -191,7 +202,13 @@ export default {
 .user-image {
     /* Add styling for the user image container */
     //margin-bottom: 10px;
+    transition: transform 0.2s;
+    cursor: pointer;
 }
+
+  .user-image:hover {
+    transform: scale(1.1); /* Add this line to scale the image up to 110% on hover */
+  }
 
 .user-image img {
     /* Apply styling to the user image */

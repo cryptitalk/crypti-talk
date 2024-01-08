@@ -22,7 +22,7 @@
         </div>
         <div class="note_header">
           <div class="n_user">
-            <img :src="note.avator" alt="">
+            <img :src="note.avator" class="user_avatar" alt="" @click="navigateTo(note.userid)">
             <div>{{ note.uname }}</div>
           </div>
           <div class="btn">
@@ -110,6 +110,7 @@ export default {
     },
     parsedLinks() {
       try {
+        if (!this.note.links) return null;
         const allLinks = JSON.parse(this.note.links);
         const usefulLinks = {};
 
@@ -158,6 +159,16 @@ export default {
         alert('Failed to post comment. Please try again.');
         this.showCommentBox = false;
       });
+    },
+    navigateTo(userid) {
+      // Use Vue Router's push method to change the route
+      const isDesktop = window.innerWidth >= 1024;
+      if (isDesktop) {
+        global.userScreenModeChanged = "Profile;"+userid;
+        this.$router.push({ path: '/main2/page2', query: { userid: userid, userScreenModeChanged: "Profile" } });
+      } else {
+        this.$router.push({ path: '/main2/page1', query: { userid: userid, userScreenModeChanged: "Profile" } });
+      }
     },
     handleReplySubmit(comment, commentID) {
       const commentData = { itemId: this.note.id, content: comment.newReplyContent, commentID: commentID };
@@ -465,6 +476,19 @@ export default {
 /* Styles for comments section */
 .comments_container {
   padding: 10px;
+}
+
+.user_avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.user_avatar:hover {
+  transform: scale(1.1); /* Add this line to scale the image up to 110% on hover */
 }
 
 

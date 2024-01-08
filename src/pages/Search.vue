@@ -33,6 +33,7 @@ export default {
             this.$updateQueue("1,");
             this.$updateQueue(key);
             // Navigate to page1 if on mobile, else navigate to page2
+            global.userScreenModeChanged = "Search";
             if (isMobile()) {
                 this.$router.push({ name: 'page1', query: { searchKey: this.key } });
             } else {

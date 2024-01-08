@@ -122,6 +122,8 @@ export default {
         ret = "2," + this.numPerPage + "," + this.pageNum;
       } else if (this.screenMode === 'Bots') {
         ret = "3," + this.numPerPage + "," + this.pageNum;
+      } else if (this.screenMode.startsWith('Profile')) {
+        ret = "4," + this.numPerPage + "," + this.pageNum + "," + this.screenMode.split(";")[1];
       }
       let components = ret.split(",");
       let firstElement = components[0];
@@ -217,11 +219,17 @@ export default {
   },
   created() {
     this.screenMode = this.$route.query.userScreenModeChanged;
+    if (this.screenMode === undefined) {
+      this.screenMode = global.userScreenModeChanged;
+    }
     this.searchKey = this.$route.query.searchKey;
     var history = this.getQueueAsString();
     console.log("history is: ", history, "screenMode is: ", this.screenMode)
     if (this.screenMode == 'Search' ||
-      this.screenMode === 'Frens' || this.screenMode === 'Bots' || this.screenMode === 'New') {
+      this.screenMode === 'Frens' ||
+      this.screenMode === 'Bots' ||
+      this.screenMode === 'New' ||
+      this.screenMode.startsWith('Profile')) {
       this.$store.dispatch('clearData5');
       isInitiated = false;
       this.isRefreshData = true

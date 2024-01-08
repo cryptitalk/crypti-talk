@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <navbar v-show="isNav"></navbar>
-    <v-touch v-on:swipeleft="onSwipeLeft" v-on:swiperight="onSwipeRight" :priority="1">
-      <router-view></router-view>
-    </v-touch>
+    <router-view></router-view>
   </div>
 </template>
 <script>

@@ -91,6 +91,7 @@ export default {
                     global.userName = response.data.userName
                     global.userImg = response.data.userImg
                     global.userBio = response.data.userBio
+                    global.userId = response.data.userid
                     EventBus.$emit('userImgChanged', response.data.userImg);
                     EventBus.$emit('userNameChanged', response.data.userName);
                 } catch (error) {
