@@ -52,7 +52,14 @@ export default {
             // ... data properties related to the modal ...
         };
     },
+    created() {
+        modal.subscribeProvider(this.handleChange)
+    },
     methods: {
+        async handleChange({ provider, providerType, address, chainId, isConnected }) {
+            console.log("provider changed:", provider, providerType, address, chainId, isConnected);
+            this.checkIfWalletIsConnected();
+        },
         async getWalletProviderWithRetry(maxRetries = 3) {
             let attempts = 0;
             let walletProvider = null;

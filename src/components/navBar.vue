@@ -113,12 +113,12 @@ export default {
     //this.$router.push('/main2')
   },
   mounted() {
-    this.$refs.walletModal.checkIfWalletIsConnected();
-    this.checkWalletConnectionInterval = setInterval(() => {
-      if (this.$refs.walletModal) {
-        this.$refs.walletModal.checkIfWalletIsConnected();
-      }
-    }, 15000); // 5000 milliseconds = 5 seconds
+    //this.$refs.walletModal.checkIfWalletIsConnected();
+    //this.checkWalletConnectionInterval = setInterval(() => {
+    //  if (this.$refs.walletModal) {
+    //    this.$refs.walletModal.checkIfWalletIsConnected();
+    //  }
+    //}, 15000); // 5000 milliseconds = 5 seconds
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
