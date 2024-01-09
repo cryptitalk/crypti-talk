@@ -163,8 +163,8 @@ export default {
     navigateTo(userid) {
       // Use Vue Router's push method to change the route
       const isDesktop = window.innerWidth >= 1024;
+      global.userScreenModeChanged = "Profile;"+userid;
       if (isDesktop) {
-        global.userScreenModeChanged = "Profile;"+userid;
         this.$router.push({ path: '/main2/page2', query: { userid: userid, userScreenModeChanged: "Profile" } });
       } else {
         this.$router.push({ path: '/main2/page1', query: { userid: userid, userScreenModeChanged: "Profile" } });
