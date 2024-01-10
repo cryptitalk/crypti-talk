@@ -55,6 +55,11 @@ export default {
     created() {
         modal.subscribeProvider(this.handleChange)
     },
+    mounted() {
+        EventBus.$on('needLoginCookie', (sig) => {
+            this.checkIfWalletIsConnected();
+        });
+    },
     methods: {
         async handleChange({ provider, providerType, address, chainId, isConnected }) {
             console.log("provider changed:", provider, providerType, address, chainId, isConnected);

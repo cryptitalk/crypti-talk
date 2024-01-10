@@ -8,6 +8,7 @@
   
 <script>
 import axios from 'axios'; // Ensure axios is imported if you're using it for HTTP requests
+import { authMixin } from '../common/authMixin.js'
 
 export default {
     props: {
@@ -22,6 +23,7 @@ export default {
             likeCount: this.item.like,
         };
     },
+    mixins: [authMixin],
     methods: {
         toggleLike() {
             this.isLiked = !this.isLiked;
@@ -31,22 +33,6 @@ export default {
             console.log(this.item)
             // Update the like status in the backend
             this.sendLikeDataToBackend();
-        },
-        getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        },
-        getAuthConfig() {
-            const loginInfo = this.getCookie('logged-in:' + global.connectedAccount);
-            const config = {};
-            if (loginInfo) {
-                config.headers = {
-                    Authorization: global.connectedAccount + ":" + loginInfo
-                };
-            }
-            return config
         },
         sendLikeDataToBackend() {
             // Implement the logic to send like data to the backend

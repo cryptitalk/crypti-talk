@@ -54,6 +54,7 @@ import { mapGetters } from 'vuex'
 import BScroll from 'better-scroll'
 import LikeButton from '../../components/LikeButton.vue';
 import { EventBus } from '../../common/eventBus.js';
+import { authMixin } from '../../common/authMixin.js'
 
 const response = require('../../common/disgoods.json')
 export default {
@@ -82,6 +83,7 @@ export default {
             return !this.isInitiated && this.isRefreshData;
         }
     },
+    mixins: [authMixin],
     methods: {
         selectedNote(item) {
             lastScrollY = this.pageScroll.y;
@@ -149,22 +151,6 @@ export default {
                     this.$Lazyload.lazyLoadHandler();
                 });
             }
-        },
-        getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        },
-        getAuthConfig() {
-            const loginInfo = this.getCookie('logged-in:' + global.connectedAccount);
-            const config = {};
-            if (loginInfo) {
-                config.headers = {
-                    Authorization: global.connectedAccount + ":" + loginInfo
-                };
-            }
-            return config
         },
         refreshData() {
             // Implement your data refreshing logic here

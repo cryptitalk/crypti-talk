@@ -43,6 +43,7 @@ import BScroll from 'better-scroll'
 import LikeButton from '../../components/LikeButton.vue';
 import Panel from '../../components/Panel.vue';
 import { EventBus } from '../../common/eventBus.js';
+import { authMixin } from '../../common/authMixin.js'
 
 export default {
   data() {
@@ -56,6 +57,7 @@ export default {
       pageNum: 1,
     }
   },
+  mixins: [authMixin],
   components: {
     LikeButton,
     Panel,
@@ -168,25 +170,6 @@ export default {
           this.$Lazyload.lazyLoadHandler();
         });
       }
-    },
-    getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-    },
-    getAuthConfig() {
-
-      const lastAccount = this.getCookie('last-loggedin-account');
-      console.log("lastAccount", lastAccount)
-      const loginInfo = this.getCookie('logged-in:' + lastAccount);
-      const config = {};
-      if (loginInfo) {
-        config.headers = {
-          Authorization: lastAccount + ":" + loginInfo
-        };
-      }
-      return config
     },
     refreshData() {
       // Implement your data refreshing logic here
