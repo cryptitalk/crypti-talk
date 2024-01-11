@@ -9,7 +9,14 @@
             <div class="modal-body">
                 <!-- Row 1: Display panel -->
                 <div class="row display-panel">
-                    {{ displayContent }}
+                    <!-- Loading indicator -->
+                    <div v-if="loading" class="loading">
+                        <img src="https://storage.googleapis.com/cryptitalk/loading.gif" alt="Loading...">
+                    </div>
+                    <!-- Display content when not loading -->
+                    <div v-else v-html="displayContentAsHTML">
+                        <!-- `displayContentAsHTML` will safely render HTML content -->
+                    </div>
                 </div>
 
                 <!-- Row 2: Text input -->
@@ -31,45 +38,93 @@
 </template>
 
 <script>
+import { authMixin } from '../common/authMixin.js'
+import axios from 'axios';
 export default {
     name: 'ContextPilot',
     data() {
         return {
             inputContent: '',
             displayContent: '',
+            maxSessionLength: 10,
+            chatSession: [],
+            loading: false,
         };
+    },
+    mixins: [authMixin],
+    computed: {
+        displayContentAsHTML() {
+            // Return the display content as HTML
+            return this.displayContent.replace(/\n/g, '<br />');
+        },
     },
     methods: {
         closeModal() {
             // Close the modal when the user clicks outside the modal or the close button
             this.$emit("close");
         },
+        async handleSubmitInput() {
+            let tempContext = this.$store.getters.selectedItemsIdDescString
+
+            if (this.chatSession.length == 0) {
+                this.chatSession.push({
+                    role: "system",
+                    content: "I am a crypto analyst."
+                });
+            }
+            while (this.chatSession.length >= this.maxSessionLength) {
+                if (this.chatSession.length === this.maxSessionLength && this.chatSession[1].role === "user") {
+                    this.chatSession.splice(1, 2);
+                } else {
+                    this.chatSession.splice(1, 1);
+                }
+            }
+            const prompt = tempContext + '\\n' + this.inputContent;
+            this.chatSession.push({
+                role: "user",
+                content: prompt
+            });
+            this.loading = true;
+            const requestData = {
+                context: true,
+                message: this.chatSession
+            };
+            axios.post('/useraction', requestData, this.getAuthConfig()).then(response => {
+                const resp = response.data;
+                this.chatSession.push({
+                    role: "system",
+                    content: resp
+                });
+                this.displayContent = resp;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error chatting', error);
+                alert('Failed to use context pilot. Please try again.');
+                this.loading = false;
+            });
+        },
         handleSubmit() {
-            this.displayContent = this.inputContent;
-            // Store in context (could be Vuex store or similar)
-            // Store in session (sessionStorage)
-            sessionStorage.setItem('sessionInput', this.inputContent);
+            this.handleSubmitInput();
         },
         showContext() {
-            // Show stored context content - implement retrieval logic as per your context storage
+            this.displayContent = this.$store.getters.selectedItemsIdDescString;
         },
         clearContext() {
-            // Clear stored context content - implement clear logic as per your context storage
+            this.$store.dispatch('clearSelectedItems5');
+            this.displayContent = 'context cleared';
         },
         showSession() {
-            this.displayContent = sessionStorage.getItem('sessionInput') || 'No session data found';
+            this.displayContent = this.chatSession.map(item => item.content).join('\n');
         },
         clearSession() {
-            sessionStorage.removeItem('sessionInput');
-            this.displayContent = '';
+            this.chatSession = [];
+            this.displayContent = 'session cleared';
         },
     },
 };
 </script>
   
 <style scoped>
-
-
 /* Main container styling */
 .context-pilot {
     position: fixed;
@@ -128,6 +183,25 @@ export default {
     margin: 10px;
 }
 
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    /* or a fixed height if you prefer */
+}
+
+.loading img {
+    max-width: 50px;
+    /* Adjust the value as needed */
+    max-height: 50px;
+    /* Adjust the value as needed */
+    display: block;
+    /* This will allow the use of margin auto for centering */
+    margin: auto;
+    /* Centers the image horizontally if the parent is flex */
+}
+
 /* Styling for the display panel where content is shown */
 .display-panel {
     background-color: #ffffff;
@@ -178,23 +252,29 @@ export default {
 
 /* Hover effect for buttons */
 .buttons-row button:hover {
-    background-color: #0d8acf; /* Slightly darker blue on hover */
-    color: #e8f5fd; /* Lighter text color on hover */
+    background-color: #0d8acf;
+    /* Slightly darker blue on hover */
+    color: #e8f5fd;
+    /* Lighter text color on hover */
 }
 
 /* Alternatively, you might want to have different hover effects for different buttons */
 .buttons-row button.submit:hover {
-    background-color: #0d8acf; /* Different color for the Submit button hover */
+    background-color: #0d8acf;
+    /* Different color for the Submit button hover */
 }
 
 .buttons-row button.clear:hover {
-    background-color: #f1f1f1; /* Different color for the Clear Context and Clear Session button hover */
-    color: #1da1f2; /* Change text color to blue for contrast */
+    background-color: #f1f1f1;
+    /* Different color for the Clear Context and Clear Session button hover */
+    color: #1da1f2;
+    /* Change text color to blue for contrast */
 }
 
 /* You can add a similar :hover pseudo-class for .show-context if you added that class earlier */
 .buttons-row .show-context:hover {
-    background-color: #17a2b8; /* Different color for the Show Context button hover */
+    background-color: #17a2b8;
+    /* Different color for the Show Context button hover */
 }
 
 
@@ -225,5 +305,4 @@ export default {
         margin: 0;
         /* Reset margins on smaller screens for input */
     }
-}
-</style>
+}</style>

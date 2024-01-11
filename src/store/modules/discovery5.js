@@ -7,6 +7,37 @@ const state = {
     isSelected: {}
 }
 
+/* item format
+{
+   "id":"ihCSFbd",
+   "img":"https://storage.googleapis.com/cryptitalk/uploaded_files/0xf05e75e42272ec60ba6157d647924fd2de7a9495/ihCSFbd_nft_media.png",
+   "type":"post",
+   "tokenReward":"none",
+   "desc":"my post GG ININ DER",
+   "comment":0,
+   "like":0,
+   "collect":20,
+   "uname":"0xf05e75",
+   "avator":"https://storage.googleapis.com/cryptitalk/uploaded_files/unna4med.png",
+   "price":"",
+   "adress":"",
+   "time":"2024-01-03 02: 25: 14",
+   "imgs":[
+      "https://storage.googleapis.com/cryptitalk/uploaded_files/0xf05e75e42272ec60ba6157d647924fd2de7a9495/ihCSFbd_nft_media.png"
+   ],
+   "comments":[
+      
+   ],
+   "alias":"0xf05e75",
+   "status":"Active",
+   "isVerified":"True",
+   "links":"",
+   "backers":"",
+   "categories":"",
+   "token":""
+}
+*/
+
 const getters = {
     // Create five getters for five different lists
     list1: state => state.all.filter((item, index) => index % 5 === 0),
@@ -17,6 +48,12 @@ const getters = {
     note5: state => state.choosedNote,
     isSelected: (state) => (id) => {
         return state.isSelected[id] || false;
+    },
+    selectedItemsIdDescString: state => {
+        return state.all
+            .filter(item => state.isSelected[item.id]) // Filter only selected items
+            .map(item => `${item.uname}: ${item.desc}`) // Map to create a string with 'id' and 'desc'
+            .join("\n----\n"); // Join all items with "----\n"
     },
 }
 
@@ -37,6 +74,9 @@ const actions = {
         const currentlySelected = state.isSelected[id] || false;
         commit(types.SET_ITEM_SELECTION5, { id, selected: !currentlySelected });
     },
+    clearSelectedItems5({ commit }) {
+        commit(types.CLEAR_SELECTED_ITEMS5);
+    },
 }
 
 const mutations = {
@@ -56,8 +96,15 @@ const mutations = {
     },
     [types.SET_ITEM_SELECTION5](state, { id, selected }) {
         Vue.set(state.isSelected, id, selected);
-    }
+    },
+    [types.CLEAR_SELECTED_ITEMS5](state) {
+        // Iterate over all keys in the isSelected object and set them to false
+        Object.keys(state.isSelected).forEach(key => {
+            Vue.set(state.isSelected, key, false);
+        });
+    },
 }
+
 
 export default {
     state,
