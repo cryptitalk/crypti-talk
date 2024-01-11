@@ -44,6 +44,15 @@
                 </div>
             </div>
 
+            <div class="con_item" @click="showContextPilot">
+                <div class="img">
+                    <img src="../assets/ai.png" alt="Context">
+                </div>
+                <div class="text">
+                    <span>ContextPilot</span>
+                </div>
+            </div>
+
             <div class="con_item" @click="showEditProfileModal">
                 <div class="img">
                     <img src="../assets/icon9.png" alt="edit profile">
@@ -65,6 +74,8 @@
                 @save-changes="handleSaveProfileChanges"></EditProfileModal>
             <FollowModal v-if="isFollowModalVisible" @close="hideFollowModal" @save-changes="handleSaveProfileChanges">
             </FollowModal>
+            <context-pilot v-if="isCtxPilotVisible" @close="hideContextPilot" @save-changes="handleSaveProfileChanges">
+            </context-pilot>
             <PostModal v-if="isPostModalVisible" @close="hidePostModal" @save-changes="handleSaveProfileChanges">
             </PostModal>
             <EntropyPopup :visible="isEntropyPopupVisible" :data="entropyData" @close="isEntropyPopupVisible = false" />
@@ -77,6 +88,7 @@ import EditProfileModal from "./EditProfileModal.vue";
 import FollowModal from "./FollowModal.vue";
 import PostModal from "./PostModal.vue";
 import EntropyPopup from './EntropyPopup.vue';
+import ContextPilot from './ContextPilot.vue';
 
 export default {
     data() {
@@ -92,6 +104,7 @@ export default {
             isFollowModalVisible: false,
             isPostModalVisible: false,
             isEntropyPopupVisible: false,
+            isCtxPilotVisible: false,
             entropyData: {},
         }
     },
@@ -100,6 +113,7 @@ export default {
         FollowModal,
         PostModal,
         EntropyPopup,
+        'context-pilot': ContextPilot,
     },
     mounted() {
         EventBus.$on('userImgChanged', (newImageURL) => {
@@ -156,6 +170,10 @@ export default {
         showFollowModal() {
             this.isFollowModalVisible = true;
         },
+        showContextPilot() {
+            console.log("come here to show context pilot")
+            this.isCtxPilotVisible = true;
+        },
         showPostModal() {
             this.isPostModalVisible = true;
         },
@@ -164,6 +182,9 @@ export default {
         },
         hideFollowModal() {
             this.isFollowModalVisible = false;
+        },
+        hideContextPilot() {
+            this.isCtxPilotVisible = false;
         },
         hidePostModal() {
             this.isPostModalVisible = false;
