@@ -95,8 +95,20 @@ export default {
                     role: "system",
                     content: resp
                 });
-                this.displayContent = resp;
-                this.loading = false;
+                // once done send ack
+                const ackData = {
+                    ack: true,
+                    message: this.chatSession
+                };
+                axios.post('/useraction', ackData, this.getAuthConfig()).then(response => {
+                    this.displayContent = resp;
+                    this.loading = false;
+                    this.$store.dispatch('clearSelectedItems5'); // clear context
+                }).catch(error => {
+                    console.error('Error ack', error);
+                    alert('Failed to use context pilot. Please try again.');
+                    this.loading = false;
+                });
             }).catch(error => {
                 console.error('Error chatting', error);
                 alert('Failed to use context pilot. Please try again.');
@@ -305,4 +317,5 @@ export default {
         margin: 0;
         /* Reset margins on smaller screens for input */
     }
-}</style>
+}
+</style>

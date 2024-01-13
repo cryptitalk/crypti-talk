@@ -133,6 +133,7 @@ export default {
                 browsing_point: this.user.browsing,
                 search_point: this.user.search,
                 like_point: this.user.like,
+                chat_point: this.user.contextPilot,
                 comment_point: this.user.comment,
                 followers_point: this.user.followers,
                 following_point: this.user.following,
