@@ -44,6 +44,7 @@ export default {
     name: 'ContextPilot',
     data() {
         return {
+            isModalOpen: true,
             inputContent: '',
             displayContent: '',
             maxSessionLength: 10,
@@ -61,6 +62,7 @@ export default {
     methods: {
         closeModal() {
             // Close the modal when the user clicks outside the modal or the close button
+            this.isModalOpen = false;
             this.$emit("close");
         },
         async handleSubmitInput() {
@@ -95,20 +97,22 @@ export default {
                     role: "system",
                     content: resp
                 });
-                // once done send ack
-                const ackData = {
-                    ack: true,
-                    message: this.chatSession
-                };
-                axios.post('/useraction', ackData, this.getAuthConfig()).then(response => {
-                    this.displayContent = resp;
-                    this.loading = false;
-                    this.$store.dispatch('clearSelectedItems5'); // clear context
-                }).catch(error => {
-                    console.error('Error ack', error);
-                    alert('Failed to use context pilot. Please try again.');
-                    this.loading = false;
-                });
+                // once done send ack, only if mdal is open
+                if (this.isModalOpen) {
+                    const ackData = {
+                        ack: true,
+                        message: this.chatSession
+                    };
+                    axios.post('/useraction', ackData, this.getAuthConfig()).then(response => {
+                        this.displayContent = resp;
+                        this.loading = false;
+                        this.$store.dispatch('clearSelectedItems5'); // clear context
+                    }).catch(error => {
+                        console.error('Error ack', error);
+                        alert('Failed to use context pilot. Please try again.');
+                        this.loading = false;
+                    });
+                }
             }).catch(error => {
                 console.error('Error chatting', error);
                 alert('Failed to use context pilot. Please try again.');
