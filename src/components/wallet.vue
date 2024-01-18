@@ -184,6 +184,7 @@ export default {
                     document.cookie = "logged-in:" + this.connectedAccount + "=" + signature + "; path=/; max-age=36000"; // Expires in 1 hour
 
                     console.log('Message signed:', signature);
+                    EventBus.$emit('loginCookieSigned', signature);
                 } catch (error) {
                     console.error('Error signing message:', error);
                 }

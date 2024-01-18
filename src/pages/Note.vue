@@ -68,6 +68,7 @@ import CommentModal from '../components/CommentModal.vue'
 import { authMixin } from '../common/authMixin.js'
 import axios from 'axios'
 import CommentsContainer from '../components/CommentsContainer.vue';
+import { EventBus } from '../common/eventBus.js';
 export default {
   data() {
     return {
@@ -79,8 +80,6 @@ export default {
       id: 0,
       isFollowing: false,
       authorId: -1,
-      checkFollowingInterval: null,
-      checkFollowingCnt: 60,
     }
   },
   mixins: [authMixin],
@@ -250,6 +249,14 @@ export default {
     CommentModal,
     CommentsContainer,
   },
+  mounted() {
+    EventBus.$on('userNameChanged', (sig) => {
+            this.checkFollowing()
+    });
+    EventBus.$on('loginCookieSigned', (sig) => {
+            this.checkFollowing()
+    });
+  },
   created() {
     this.id = this.$route.params.id
     this.fetchNoteData(this.id)
@@ -259,11 +266,11 @@ export default {
     this.$nextTick(() => {
       this._initScroll()
     })
-    this.checkFollowingInterval = setInterval(this.checkFollowing, 1000);
+    //this.checkFollowingInterval = setInterval(this.checkFollowing, 1000);
   },
   beforeDestroy() {
     // Clear the interval when the component is destroyed to prevent memory leaks
-    clearInterval(this.checkFollowingInterval);
+    //clearInterval(this.checkFollowingInterval);
   },
   watch: {
     '$route'() {
