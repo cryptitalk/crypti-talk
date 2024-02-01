@@ -40,6 +40,7 @@
 <script>
 import { authMixin } from '../common/authMixin.js'
 import axios from 'axios';
+import { marked } from 'marked';
 export default {
     name: 'ContextPilot',
     data() {
@@ -55,8 +56,8 @@ export default {
     mixins: [authMixin],
     computed: {
         displayContentAsHTML() {
-            // Return the display content as HTML
-            return this.displayContent.replace(/\n/g, '<br />');
+            // Convert markdown to HTML and replace newlines with <br>
+            return this.convertMarkdownToHtml(this.displayContent);
         },
     },
     methods: {
@@ -64,6 +65,69 @@ export default {
             // Close the modal when the user clicks outside the modal or the close button
             this.isModalOpen = false;
             this.$emit("close");
+        },
+        convertMarkdownToHtml(markdownText) {
+            // Use marked to convert markdown to HTML
+            return marked(markdownText);
+        },
+        async sendAck() {
+            if (this.isModalOpen) {
+                const ackData = {
+                    ack: true,
+                    message: this.chatSession
+                };
+                axios.post('/useraction', ackData, this.getAuthConfig()).then(response => {
+                    this.loading = false;
+                    this.$store.dispatch('clearSelectedItems5'); // clear context
+                }).catch(error => {
+                    console.error('Error ack', error);
+                    alert('Failed to use context pilot. Please try again.');
+                    this.loading = false;
+                });
+            }
+        },
+        constructBodyFunc(chatSessionGPT) {
+            return {
+                model: "gpt",
+                message: chatSessionGPT
+            }
+        },
+        async postDataToAPI(apiEndpoint, headers, body) {
+            const messageJsonString = JSON.stringify(body);
+            return axios.post(apiEndpoint, { message_json: messageJsonString }, {
+                headers: headers
+            });
+        },
+        async initEventStream() {
+            const message = this.constructBodyFunc(this.chatSession);
+            let respose = await this.postDataToAPI('streaminit', { 'Content-Type': 'application/json' }, message);
+            let res = ''
+
+            // Initialize the EventSource with the encoded JSON in the URL query parameter
+            let eventSource = new EventSource(`https://main-wjaxre4ena-uc.a.run.app/streamchat?session_id=${respose.data.session_id}`);
+            // Use an arrow function so `this` is correctly bound to the Vue instance
+            eventSource.onmessage = (event) => {
+                this.loading = false;
+                var messageData = JSON.parse(event.data);
+                res += messageData.text;
+                this.displayContent = res;
+                if (messageData.finish_reason) {
+                    eventSource.close();
+                    this.chatSession.push({
+                        role: "system",
+                        content: this.displayContent
+                    });
+                    // once done send ack, only if modal is open
+                    this.sendAck();
+                }
+            };
+
+            // The error handler should also be an arrow function
+            eventSource.onerror = (event) => {
+                console.error('EventSource failed:', event);
+                eventSource.close();
+                this.loading = false;
+            };
         },
         async handleSubmitInput() {
             let tempContext = this.$store.getters.selectedItemsIdDescString
@@ -87,37 +151,14 @@ export default {
                 content: prompt
             });
             this.loading = true;
-            const requestData = {
-                context: true,
-                message: this.chatSession
-            };
-            axios.post('/useraction', requestData, this.getAuthConfig()).then(response => {
-                const resp = response.data;
-                this.chatSession.push({
-                    role: "system",
-                    content: resp
-                });
-                // once done send ack, only if mdal is open
-                if (this.isModalOpen) {
-                    const ackData = {
-                        ack: true,
-                        message: this.chatSession
-                    };
-                    axios.post('/useraction', ackData, this.getAuthConfig()).then(response => {
-                        this.displayContent = resp;
-                        this.loading = false;
-                        this.$store.dispatch('clearSelectedItems5'); // clear context
-                    }).catch(error => {
-                        console.error('Error ack', error);
-                        alert('Failed to use context pilot. Please try again.');
-                        this.loading = false;
-                    });
-                }
-            }).catch(error => {
-                console.error('Error chatting', error);
-                alert('Failed to use context pilot. Please try again.');
+
+            try {
+                await this.initEventStream();
+            } catch (error) {
+                console.error('Error starting chat session stream', error);
+                alert('Failed to use streaming chat. Please try again.');
                 this.loading = false;
-            });
+            }
         },
         handleSubmit() {
             this.handleSubmitInput();

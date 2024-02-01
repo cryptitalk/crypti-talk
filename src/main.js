@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'production') {
   global.axios = axios;    // Globalize axios
   console.log("in production");
 } else {
-  axios.defaults.baseURL = 'https://byzql.nas.cpolar.cn/';   // Set base URL
+  axios.defaults.baseURL = 'http://localhost:5000/';   // Set base URL
   global.axios = axios;    // Globalize axios
   console.log("in test");
 }
