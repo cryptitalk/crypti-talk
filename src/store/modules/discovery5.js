@@ -52,9 +52,18 @@ const getters = {
     selectedItemsIdDescString: state => {
         return state.all
             .filter(item => state.isSelected[item.id]) // Filter only selected items
-            .map(item => `${item.uname}: ${item.desc}`) // Map to create a string with 'id' and 'desc'
+            .filter(item => !item.uname.startsWith("func_")) // Exclude items where uname starts with "func_"
+            .map(item => `${item.uname}: ${item.desc}`) // Map to create a string with 'uname' and 'desc'
             .join("\n----\n"); // Join all items with "----\n"
     },
+    
+    selectedItemsIdFunc: state => {
+        return state.all
+            .filter(item => state.isSelected[item.id]) // Filter only selected items
+            .filter(item => item.uname.startsWith("func_")) // Exclude items where uname starts with "func_"
+            .map(item => `${item.uname}`) // Map to create a string with 'uname'
+            .join(","); // Join with a comma
+    }
 }
 
 const actions = {

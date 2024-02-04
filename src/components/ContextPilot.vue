@@ -51,6 +51,7 @@ export default {
             maxSessionLength: 10,
             chatSession: [],
             loading: false,
+            lastcall: "NONE",
         };
     },
     mixins: [authMixin],
@@ -87,6 +88,15 @@ export default {
             }
         },
         constructBodyFunc(chatSessionGPT) {
+            let funcs = this.$store.getters.selectedItemsIdFunc.split(',');
+            if (funcs.length > 0 && funcs[0] !== "") {
+                return {
+                    model: "gpt",
+                    function_id: funcs,
+                    message: chatSessionGPT
+                }
+            }
+            // chat only
             return {
                 model: "gpt",
                 message: chatSessionGPT
@@ -104,12 +114,23 @@ export default {
             let res = ''
 
             // Initialize the EventSource with the encoded JSON in the URL query parameter
-            let eventSource = new EventSource(`https://main-wjaxre4ena-uc.a.run.app/streamchat?session_id=${respose.data.session_id}`);
+            let eventSource = new EventSource(`${global.streamurl}?session_id=${respose.data.session_id}`);
             // Use an arrow function so `this` is correctly bound to the Vue instance
             eventSource.onmessage = (event) => {
                 this.loading = false;
                 var messageData = JSON.parse(event.data);
-                res += messageData.text;
+                if (messageData.text === "calling AI to get function parameters...." || (messageData.text && messageData.text.includes("calling function"))) {
+                    console.log("calling function", messageData.text)
+                    res = messageData.text + '\n';
+                    this.lastcall = "FUNCTION"
+                } else {
+                    if (this.lastcall === "FUNCTION") {
+                        res = messageData.text;
+                        this.lastcall = "NONE"
+                    } else {
+                        res += messageData.text;
+                    }
+                }
                 this.displayContent = res;
                 if (messageData.finish_reason) {
                     eventSource.close();
