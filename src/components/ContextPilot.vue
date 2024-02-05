@@ -61,6 +61,16 @@ export default {
             return this.convertMarkdownToHtml(this.displayContent);
         },
     },
+    created() {
+        this.loadSession();
+    },
+    watch: {
+        isModalOpen(newVal) {
+            if (newVal) {
+                this.loadSession();
+            }
+        },
+    },
     methods: {
         closeModal() {
             // Close the modal when the user clicks outside the modal or the close button
@@ -134,7 +144,7 @@ export default {
                 this.displayContent = res;
                 if (messageData.finish_reason) {
                     eventSource.close();
-                    this.chatSession.push({
+                    this.addToChatSession({
                         role: "system",
                         content: this.displayContent
                     });
@@ -154,20 +164,14 @@ export default {
             let tempContext = this.$store.getters.selectedItemsIdDescString
 
             if (this.chatSession.length == 0) {
-                this.chatSession.push({
+                this.addToChatSession({
                     role: "system",
                     content: "I am a crypto analyst."
                 });
             }
-            while (this.chatSession.length >= this.maxSessionLength) {
-                if (this.chatSession.length === this.maxSessionLength && this.chatSession[1].role === "user") {
-                    this.chatSession.splice(1, 2);
-                } else {
-                    this.chatSession.splice(1, 1);
-                }
-            }
+
             const prompt = tempContext + '\\n' + this.inputContent;
-            this.chatSession.push({
+            this.addToChatSession({
                 role: "user",
                 content: prompt
             });
@@ -194,9 +198,31 @@ export default {
         showSession() {
             this.displayContent = this.chatSession.map(item => item.content).join('\n');
         },
+        saveSession() {
+            localStorage.setItem('chatSession', JSON.stringify(this.chatSession));
+        },
+        loadSession() {
+            const savedSession = localStorage.getItem('chatSession');
+            if (savedSession) {
+                this.chatSession = JSON.parse(savedSession);
+            }
+        },
+        addToChatSession(message) {
+            this.chatSession.push(message);
+            while (this.chatSession.length >= this.maxSessionLength) {
+                if (this.chatSession.length === this.maxSessionLength && this.chatSession[1].role === "user") {
+                    this.chatSession.splice(1, 2);
+                } else {
+                    this.chatSession.splice(1, 1);
+                }
+            }
+
+            this.saveSession(); // Persist the updated session
+        },
         clearSession() {
             this.chatSession = [];
             this.displayContent = 'session cleared';
+            this.saveSession(); // Clear the saved session as well
         },
     },
 };
