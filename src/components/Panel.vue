@@ -66,7 +66,7 @@
             <!-- About Link -->
             <div class="con_item">
                 <a href="https://linktr.ee/cryptitalk" target="_blank" class="about-link">
-                    <div class="text">LinkTree</div>
+                    <div class="text">About</div>
                 </a>
             </div>
 

@@ -212,7 +212,7 @@ export default {
             this.handleSubmitInput();
         },
         showContext() {
-            this.displayContent = this.$store.getters.selectedItemsIdDescString;
+            this.displayContent = this.$store.getters.selectedItemsIdFuncString;
         },
         clearContext() {
             this.$store.dispatch('clearSelectedItems5');
@@ -230,6 +230,7 @@ export default {
             const savedSession = localStorage.getItem('chatSession');
             if (savedSession) {
                 this.chatSession = JSON.parse(savedSession);
+                this.totalPages = Math.ceil(this.chatSession.length / this.pageSize);
             }
         },
         addToChatSession(message) {

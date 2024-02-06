@@ -9,7 +9,9 @@
         <div class="nav_left">
           <img src="../assets/wm.png" @click="popupVisible = true">
         </div>
+        
         <div class="nav_center">
+          <!--
           <ul class="nav_tab">
             <li class="tab-item">
               <a @click="handleFrensTabClick">Frens</a>
@@ -21,7 +23,9 @@
               <a @click="handleNewTabClick">News</a>
             </li>
           </ul>
+          -->
         </div>
+        
         <div class="nav_right">
           <w3m-button label="Connect" balance="hide" size="sm">Connect</w3m-button>
         </div>

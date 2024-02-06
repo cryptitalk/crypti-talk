@@ -56,7 +56,12 @@ const getters = {
             .map(item => `${item.uname}: ${item.desc}`) // Map to create a string with 'uname' and 'desc'
             .join("\n----\n"); // Join all items with "----\n"
     },
-    
+    selectedItemsIdFuncString: state => {
+        return state.all
+            .filter(item => state.isSelected[item.id]) // Filter only selected items
+            .map(item => `${item.uname}: ${item.desc}`) // Map to create a string with 'uname' and 'desc'
+            .join("\n----\n"); // Join all items with "----\n"
+    },
     selectedItemsIdFunc: state => {
         return state.all
             .filter(item => state.isSelected[item.id]) // Filter only selected items
@@ -81,6 +86,7 @@ const actions = {
     },
     toggleItemSelection5({ commit, state }, { item, id }) {
         const currentlySelected = state.isSelected[id] || false;
+        commit(types.CLEAR_SELECTED_ITEMS5); // Clear all selected items
         commit(types.SET_ITEM_SELECTION5, { id, selected: !currentlySelected });
     },
     clearSelectedItems5({ commit }) {
