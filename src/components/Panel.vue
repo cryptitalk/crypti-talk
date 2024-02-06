@@ -25,7 +25,7 @@
                     <span>ENTROPY</span>
                 </div>
             </div>
-
+            <!--
             <div class="con_item" @click="showPostModal">
                 <div class="img">
                     <img src="../assets/icon3.png" alt="post">
@@ -43,6 +43,7 @@
                     <span>Follow</span>
                 </div>
             </div>
+            -->
 
             <div class="con_item" @click="showContextPilot">
                 <div class="img">

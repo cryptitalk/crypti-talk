@@ -10,14 +10,21 @@
                 <!-- Row 1: Display panel -->
                 <div class="row display-panel">
                     <!-- Loading indicator -->
-                    <div v-if="loading" class="loading">
-                        <img src="https://storage.googleapis.com/cryptitalk/loading.gif" alt="Loading...">
+                    <div class="display-panel-content">
+                        <div v-if="loading" class="loading">
+                            <img src="https://storage.googleapis.com/cryptitalk/loading.gif" alt="Loading...">
+                        </div>
+                        <!-- Display content when not loading -->
+                        <div v-else v-html="displayContentAsHTML">
+                            <!-- `displayContentAsHTML` will safely render HTML content -->
+                        </div>
                     </div>
-                    <!-- Display content when not loading -->
-                    <div v-else v-html="displayContentAsHTML">
-                        <!-- `displayContentAsHTML` will safely render HTML content -->
+                    <div class="navigation-controls">
+                        <button @click="goToPreviousPage">&lt; Previous</button>
+                        <button @click="goToNextPage">Next &gt;</button>
                     </div>
                 </div>
+
 
                 <!-- Row 2: Text input -->
                 <div class="row text-input">
@@ -48,10 +55,13 @@ export default {
             isModalOpen: true,
             inputContent: '',
             displayContent: '',
-            maxSessionLength: 10,
+            maxSessionLength: 20,
             chatSession: [],
             loading: false,
             lastcall: "NONE",
+            currentPage: 1,
+            pageSize: 1, // Define how many conversation rounds per page
+            totalPages: 1,
         };
     },
     mixins: [authMixin],
@@ -59,6 +69,16 @@ export default {
         displayContentAsHTML() {
             // Convert markdown to HTML and replace newlines with <br>
             return this.convertMarkdownToHtml(this.displayContent);
+        },
+        startIndex() {
+            return (this.currentPage - 1) * this.pageSize;
+        },
+        endIndex() {
+            return this.currentPage * this.pageSize;
+        },
+        currentSessionPage() {
+            // Return only the rounds for the current page
+            return this.chatSession.slice(this.startIndex, this.endIndex);
         },
     },
     created() {
@@ -69,6 +89,9 @@ export default {
             if (newVal) {
                 this.loadSession();
             }
+        },
+        currentPage() {
+            this.showSession(); // Update display whenever the current page changes
         },
     },
     methods: {
@@ -196,10 +219,12 @@ export default {
             this.displayContent = 'context cleared';
         },
         showSession() {
-            this.displayContent = this.chatSession.map(item => item.content).join('\n');
+            //this.displayContent = this.chatSession.map(item => item.content).join('\n');
+            this.displayContent = this.currentSessionPage.map(item => item.role + ": \n" +item.content).join('\\n');
         },
         saveSession() {
             localStorage.setItem('chatSession', JSON.stringify(this.chatSession));
+            this.totalPages = Math.ceil(this.chatSession.length / this.pageSize);
         },
         loadSession() {
             const savedSession = localStorage.getItem('chatSession');
@@ -223,6 +248,16 @@ export default {
             this.chatSession = [];
             this.displayContent = 'session cleared';
             this.saveSession(); // Clear the saved session as well
+        },
+        goToPreviousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+        goToNextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
         },
     },
 };
@@ -308,18 +343,35 @@ export default {
 
 /* Styling for the display panel where content is shown */
 .display-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Add this line */
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 700px;
     height: 50vh;
-    /* Set the height to 50% of the viewport height */
     overflow-y: auto;
-    /* Ensure that content can scroll if it's taller than the panel */
     padding: 10px;
     margin-bottom: 20px;
-    /* Distance between display panel and input field */
+}
+
+.display-panel-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.navigation-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Adjusted padding */
+}
+
+.navigation-controls button {
+    margin: 0 5px;
+    /* Add some space between buttons */
 }
 
 /* Styling for the text input field */
