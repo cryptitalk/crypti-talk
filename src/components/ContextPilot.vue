@@ -19,13 +19,14 @@
                             <!-- `displayContentAsHTML` will safely render HTML content -->
                         </div>
                     </div>
-                    <div class="navigation-controls">
+                    <div class="navigation-controls" v-if="inShowSessionMode">
                         <button @click="goToPreviousPage">&lt; Previous</button>
+                        <button @click="mintToken">Mint</button>
                         <button @click="goToNextPage">Next &gt;</button>
                     </div>
                 </div>
-
-
+                <!-- Include WalletModal component -->
+                <wallet-modal ref="walletModal"></wallet-modal>
                 <!-- Row 2: Text input -->
                 <div class="row text-input">
                     <input type="text" v-model="inputContent" />
@@ -48,6 +49,9 @@
 import { authMixin } from '../common/authMixin.js'
 import axios from 'axios';
 import { marked } from 'marked';
+import WalletModal from './wallet.vue';
+import entropyAbi from '../abi/EntropyToken.json';
+import { ethers } from 'ethers';
 export default {
     name: 'ContextPilot',
     data() {
@@ -60,9 +64,14 @@ export default {
             loading: false,
             lastcall: "NONE",
             currentPage: 1,
-            pageSize: 1, // Define how many conversation rounds per page
+            pageSize: 1,
             totalPages: 1,
+            inShowSessionMode: false,
+            contractAddress: '0xF3B7eaac00221A17c6aCE3D6E1A8434a36aa015b',
         };
+    },
+    components: {
+        'wallet-modal': WalletModal
     },
     mixins: [authMixin],
     computed: {
@@ -97,12 +106,42 @@ export default {
     methods: {
         closeModal() {
             // Close the modal when the user clicks outside the modal or the close button
+            this.inShowSessionMode = false;
             this.isModalOpen = false;
             this.$emit("close");
         },
         convertMarkdownToHtml(markdownText) {
             // Use marked to convert markdown to HTML
             return marked(markdownText);
+        },
+        async mintToken() {
+            // Check if the wallet is connected; if not, the wallet modal should manage the connection process
+            if (!this.isWalletConnected) {
+                // This will trigger the wallet connection process
+                await this.$refs.walletModal.checkIfWalletIsConnected();
+            }
+
+            // After ensuring the wallet connection, get the signer from the walletProvider
+            const walletProvider = this.$refs.walletModal.walletProvider;
+            if (walletProvider) {
+                const provider = new ethers.providers.Web3Provider(walletProvider);
+                const signer = provider.getSigner();
+                // TODO: infer the contract address based on chain info, if not defined ask to switch to correct network
+                const contract = new ethers.Contract(this.contractAddress, entropyAbi, signer);
+                const uri = await this.getTokenUri();
+                try {
+                    let tx = await contract.saveSession(signer.getAddress(), uri);
+                    let receipt = await tx.wait();
+                    console.log('Transaction receipt:', receipt);
+                } catch (error) {
+                    console.error('Error minting token:', error);
+                    alert('Failed to mint token. Please try again.');
+                }
+            }
+        },
+        async getTokenUri() {
+            // TODO work with backend to get URL
+            return "https://storage.googleapis.com/cryptitalk/entropy.json"
         },
         async sendAck() {
             if (this.isModalOpen) {
@@ -209,18 +248,21 @@ export default {
             }
         },
         handleSubmit() {
+            this.inShowSessionMode = false;
             this.handleSubmitInput();
         },
         showContext() {
+            this.inShowSessionMode = false;
             this.displayContent = this.$store.getters.selectedItemsIdFuncString;
         },
         clearContext() {
+            this.inShowSessionMode = false;
             this.$store.dispatch('clearSelectedItems5');
             this.displayContent = 'context cleared';
         },
         showSession() {
-            //this.displayContent = this.chatSession.map(item => item.content).join('\n');
-            this.displayContent = this.currentSessionPage.map(item => item.role + ": \n" +item.content).join('\\n');
+            this.displayContent = this.currentSessionPage.map(item => item.role + ": \\n" + item.content).join('\\\\n');
+            this.inShowSessionMode = true;
         },
         saveSession() {
             localStorage.setItem('chatSession', JSON.stringify(this.chatSession));
@@ -249,6 +291,7 @@ export default {
             this.chatSession = [];
             this.displayContent = 'session cleared';
             this.saveSession(); // Clear the saved session as well
+            this.inShowSessionMode = false;
         },
         goToPreviousPage() {
             if (this.currentPage > 1) {
@@ -363,11 +406,13 @@ export default {
     flex-grow: 1;
     overflow-y: auto;
 }
+
 .navigation-controls {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px; /* Adjusted padding */
+    padding: 10px;
+    /* Adjusted padding */
 }
 
 .navigation-controls button {
