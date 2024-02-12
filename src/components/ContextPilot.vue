@@ -139,9 +139,17 @@ export default {
                 }
             }
         },
+        extractSessionId(url) {
+            const regex = /stream_data\/([0-9a-fA-F-]+)\.json/;
+            const match = url.match(regex);
+            return match ? match[1] : null; // Returns the session_id or null if not found
+        },
         async getTokenUri() {
-            const message = this.constructBodyFunc(this.chatSession);
+            let message = this.constructBodyFunc(this.chatSession);
             let respose = await this.postDataToAPI('greenfield', { 'Content-Type': 'application/json' }, message);
+            let session_id = this.extractSessionId(respose.data.uri);
+            message.session_id = session_id;
+            this.postDataToAPI('dalle', { 'Content-Type': 'application/json' }, message);
             return respose.data.uri;
         },
         async sendAck() {
