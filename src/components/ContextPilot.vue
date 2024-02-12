@@ -140,8 +140,9 @@ export default {
             }
         },
         async getTokenUri() {
-            // TODO work with backend to get URL
-            return "https://storage.googleapis.com/cryptitalk/entropy.json"
+            const message = this.constructBodyFunc(this.chatSession);
+            let respose = await this.postDataToAPI('greenfield', { 'Content-Type': 'application/json' }, message);
+            return respose.data.uri;
         },
         async sendAck() {
             if (this.isModalOpen) {
