@@ -21,7 +21,9 @@
                     </div>
                     <div class="navigation-controls" v-if="inShowSessionMode">
                         <button @click="goToPreviousPage">&lt; Previous</button>
-                        <button @click="mintToken">Mint</button>
+                        <button @click="mintToken" :disabled="loading">
+                            Mint
+                        </button>
                         <button @click="goToNextPage">Next &gt;</button>
                     </div>
                 </div>
@@ -120,23 +122,45 @@ export default {
                 // This will trigger the wallet connection process
                 await this.$refs.walletModal.checkIfWalletIsConnected();
             }
-
+            this.loading = true;
             // After ensuring the wallet connection, get the signer from the walletProvider
             const walletProvider = this.$refs.walletModal.walletProvider;
             if (walletProvider) {
                 const provider = new ethers.providers.Web3Provider(walletProvider);
                 const signer = provider.getSigner();
-                // TODO: infer the contract address based on chain info, if not defined ask to switch to correct network
+                const network = await provider.getNetwork();
+                let etherscanPrefix;
+
+                switch (network.chainId) {
+                    case 137: // Mainnet
+                        this.contractAddress = "0xF3B7eaac00221A17c6aCE3D6E1A8434a36aa015b";
+                        etherscanPrefix = `https://polygonscan.com/tx/`;
+                        break;
+                    case 56: // Rinkeby
+                        this.contractAddress = "0xe4d250fdc679b0b13ed08141ff4649f4b75225ab";
+                        etherscanPrefix = `https://bscscan.com/tx/`;
+                        break;
+                    // Add other networks as needed
+                    default:
+                        alert(`Please switch to a supported network.`);
+                        this.loading = false;
+                        return;
+                }
                 const contract = new ethers.Contract(this.contractAddress, entropyAbi, signer);
                 const uri = await this.getTokenUri();
                 try {
                     let tx = await contract.saveSession(signer.getAddress(), uri);
                     let receipt = await tx.wait();
                     console.log('Transaction receipt:', receipt);
+
+                    // Etherscan URL formation (replace with the appropriate network URL if needed)
+                    let etherscanUrl = `${etherscanPrefix}${receipt.transactionHash}`;
+                    this.displayContent = `Transaction successful! <a href="${etherscanUrl}" target="_blank">View on Blockchain scan</a>`;
                 } catch (error) {
                     console.error('Error minting token:', error);
                     alert('Failed to mint token. Please try again.');
                 }
+                this.loading = false;
             }
         },
         extractSessionId(url) {
@@ -487,7 +511,6 @@ export default {
     background-color: #17a2b8;
     /* Different color for the Show Context button hover */
 }
-
 
 /* Media query for smaller screens */
 @media screen and (max-width: 768px) {
