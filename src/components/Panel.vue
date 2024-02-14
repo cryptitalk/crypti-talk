@@ -139,6 +139,7 @@ export default {
                 followers_point: this.user.followers,
                 following_point: this.user.following,
                 is_daily_active: this.user.is_daily_active,
+                nft_cnt: this.user.nft_cnt,
             };
             this.isEntropyPopupVisible = true;
         },
