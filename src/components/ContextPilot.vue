@@ -525,6 +525,7 @@ export default {
 
     /* Additional padding for smaller screens for readability */
     .display-panel {
+        max-width: 90%;
         padding: 10px;
     }
 

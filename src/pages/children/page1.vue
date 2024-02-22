@@ -7,13 +7,15 @@
             <div class="dis-list">
                 <div class="left-list">
                     <ul>
-                        <li v-for="(item, index) in leftDisList" @click="selectedNote(item)" :key="index">
+                        <li v-for="(item, index) in leftDisList" @click="clickHandler(item, $event)" :key="index">
                             <div class="note_item">
                                 <a class="img">
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{ item.short_desc | truncate(20) }}</p>
+                                    <input type="checkbox" :id="'checkbox-' + item.id" :checked="isSelected(item)"
+                                        @change.prevent="handleSelectionChange(item, $event)">
+                                    <label :for="'checkbox-' + item.id">{{ item.short_desc | truncate(20) }}</label>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -27,13 +29,15 @@
                 </div>
                 <div class="right-list">
                     <ul>
-                        <li v-for="(item, index) in rightDisList" @click="selectedNote(item)" :key="index">
+                        <li v-for="(item, index) in rightDisList"  @click="clickHandler(item, $event)" :key="index">
                             <div class="note_item">
                                 <a class="img">
                                     <img v-lazy="item.img" alt="">
                                 </a>
                                 <div class="desc">
-                                    <p>{{ item.short_desc | truncate(20) }}</p>
+                                    <input type="checkbox" :id="'checkbox-' + item.id" :checked="isSelected(item)"
+                                        @change.prevent="handleSelectionChange(item, $event)">
+                                    <label :for="'checkbox-' + item.id">{{ item.short_desc | truncate(20) }}</label>
                                 </div>
                                 <div class="note">
                                     <a class="user">
@@ -90,6 +94,18 @@ export default {
             //this.$store.dispatch('getNote', item)
             //this.addItemToQueue(item.id)
             this.$router.push('/note/' + item.id)
+        },
+        handleSelectionChange(item, $event) {
+            $event.stopPropagation(); // Prevent the click event from bubbling up to <li>
+            this.$store.dispatch('toggleItemSelection5', { item, id: item.id });
+        },
+        isSelected(item) {
+            return this.$store.getters.isSelected(item.id); // Assuming item has a property 'id' which is unique
+        },
+        clickHandler(item, $event) {
+            if ($event.target.type !== 'checkbox') {
+                this.selectedNote(item);
+            }
         },
         addItemToQueue(item) {
             this.$updateQueue(item);
