@@ -14,7 +14,17 @@
                 </div>
 
                 <div class="content">
-                    <label for="bio">Content:</label>
+                    <label for="bio">Url:</label>
+                    <textarea id="content" v-model="urlContent"></textarea>
+                </div>
+
+                <div class="content">
+                    <label for="bio">Header:</label>
+                    <textarea id="content" v-model="headerContent"></textarea>
+                </div>
+
+                <div class="content">
+                    <label for="bio">API description:</label>
                     <textarea id="content" v-model="newContent"></textarea>
                 </div>
 
@@ -35,8 +45,11 @@ export default {
     data() {
         return {
             postPicture: "",
+            urlContent: "",
+            headerContent: "",
             newContent: "my post",
             sevenLetterString: "",
+            function_name: "",
         };
     },
     mixins: [authMixin],
@@ -73,10 +86,42 @@ export default {
                 alert("Please upload a post picture.");
                 return;
             }
+            const processDefinition = (content) => {
+                // verify json format
+                try {
+                    JSON.parse(content);
+                } catch (e) {
+                    alert('Invalid JSON format. Please try again.');
+                    return null;
+                }
+                return content.replace(/\\\"/g, 'null');
+            };
+            // second step is to insert a function data to the backend
+            const funcData = {
+                "add_function": "True",
+                "url": this.urlContent,
+                "header": processDefinition(this.headerContent),
+                "definition": processDefinition(this.newContent),
+            }
+            if (funcData.header === null || funcData.definition === null) {
+                return;
+            }
+            axios.post('/useraction', funcData, this.getAuthConfig()).then(response => {
+                if (response.status !== 200) {
+                    console.log(response.status)
+                    alert('Failed to post api definition. Please try again.');
+                    return;
+                }
+                this.function_name = response.data.function_name;
+            }).catch(error => {
+                console.error('Error updating api definition', error);
+                alert('Failed to post api definition. Please try again.');
+                return;
+            });
             const currentDate = new Date();
             const currentFormattedTime = currentDate.toISOString().replace("T", " ").split(".")[0];
             const text = {
-                "id": this.sevenLetterString,
+                "id": this.function_name,
                 "img": this.postPicture,
                 "type": "post",
                 "tokenReward": "none",
@@ -84,7 +129,7 @@ export default {
                 "comment": 0,
                 "like": 0,
                 "collect": 20,
-                "uname": global.userName,
+                "uname": this.function_name,
                 "avator": global.userImg,
                 "price": "",
                 "adress": "",
@@ -106,19 +151,19 @@ export default {
                     address: global.connectedAccount
                 }
             };
-            console.log("profile data", postData)
             axios.post('/vec', postData, this.getAuthConfig()).then(response => {
                 console.log('Post data updated on backend', response.data);
-                if (response.data.post_mapping === 'ok') {
+                if (response.status === 200) {
                     this.closeModal();
+                    alert('Successfully save the function.', this.function_name);
                 } else {
-                    alert('Failed to post profile. Please try again.');
+                    alert('Issue Failed to post api. Please try again.');
                 }
             }).catch(error => {
-                console.error('Error updating profile data', error);
-                alert('Failed to post profile. Please try again.');
+                console.error('Error updating api data', error);
+                alert('Failed to post api. Please try again.');
             });
-            
+
         },
     },
 };

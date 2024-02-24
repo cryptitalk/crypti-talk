@@ -25,16 +25,16 @@
                     <span>ENTROPY</span>
                 </div>
             </div>
-            <!--
+            
             <div class="con_item" @click="showPostModal">
                 <div class="img">
                     <img src="../assets/icon3.png" alt="post">
                 </div>
                 <div class="text">
-                    <span>Add Post</span>
+                    <span>Add API</span>
                 </div>
             </div>
-
+            <!--
             <div class="con_item" @click="showFollowModal">
                 <div class="img">
                     <img src="../assets/transmit.png" alt="Follow">
