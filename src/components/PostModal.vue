@@ -112,58 +112,58 @@ export default {
                     alert('Failed to post api definition. Please try again.');
                     return;
                 }
+                console.log('Function data updated on backend', response.data);
                 this.function_name = response.data.function_name;
+                const currentDate = new Date();
+                const currentFormattedTime = currentDate.toISOString().replace("T", " ").split(".")[0];
+                const text = {
+                    "id": this.function_name,
+                    "img": this.postPicture,
+                    "type": "post",
+                    "tokenReward": "none",
+                    "desc": this.newContent,
+                    "comment": 0,
+                    "like": 0,
+                    "collect": 20,
+                    "uname": this.function_name,
+                    "avator": global.userImg,
+                    "price": "",
+                    "adress": "",
+                    "time": currentFormattedTime,
+                    "imgs": [this.postPicture],
+                    "comments": [],
+                    'alias': global.userName,
+                    "status": "Active",
+                    'isVerified': "True",
+                    'links': "",
+                    'backers': "",
+                    'categories': "",
+                    'token': ""
+                }
+                const postData = {
+                    tgid: "",
+                    message: {
+                        text: JSON.stringify(text),
+                        address: global.connectedAccount
+                    }
+                };
+                axios.post('/vec', postData, this.getAuthConfig()).then(response => {
+                    console.log('Post data updated on backend', response.data);
+                    if (response.status === 200) {
+                        this.closeModal();
+                        alert('Successfully save the function.', this.function_name);
+                    } else {
+                        alert('Issue Failed to post api. Please try again.');
+                    }
+                }).catch(error => {
+                    console.error('Error updating api data', error);
+                    alert('Failed to post api. Please try again.');
+                });
             }).catch(error => {
                 console.error('Error updating api definition', error);
                 alert('Failed to post api definition. Please try again.');
                 return;
             });
-            const currentDate = new Date();
-            const currentFormattedTime = currentDate.toISOString().replace("T", " ").split(".")[0];
-            const text = {
-                "id": this.function_name,
-                "img": this.postPicture,
-                "type": "post",
-                "tokenReward": "none",
-                "desc": this.newContent,
-                "comment": 0,
-                "like": 0,
-                "collect": 20,
-                "uname": this.function_name,
-                "avator": global.userImg,
-                "price": "",
-                "adress": "",
-                "time": currentFormattedTime,
-                "imgs": [this.postPicture],
-                "comments": [],
-                'alias': global.userName,
-                "status": "Active",
-                'isVerified': "True",
-                'links': "",
-                'backers': "",
-                'categories': "",
-                'token': ""
-            }
-            const postData = {
-                tgid: "",
-                message: {
-                    text: JSON.stringify(text),
-                    address: global.connectedAccount
-                }
-            };
-            axios.post('/vec', postData, this.getAuthConfig()).then(response => {
-                console.log('Post data updated on backend', response.data);
-                if (response.status === 200) {
-                    this.closeModal();
-                    alert('Successfully save the function.', this.function_name);
-                } else {
-                    alert('Issue Failed to post api. Please try again.');
-                }
-            }).catch(error => {
-                console.error('Error updating api data', error);
-                alert('Failed to post api. Please try again.');
-            });
-
         },
     },
 };
