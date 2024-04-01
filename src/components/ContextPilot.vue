@@ -116,6 +116,23 @@ export default {
             // Use marked to convert markdown to HTML
             return marked(markdownText);
         },
+        async getEntropy(uri) {
+            try {
+                const response = await fetch(uri);
+                if (response.ok) {
+                    const uriContent = await response.json();
+                    const entropy = uriContent.entropy; // Here we access the entropy value
+                    console.log('Entropy Value:', entropy);
+                    return entropy; // Return the entropy value or as needed
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error fetching token URI:', error);
+                // Handle error accordingly, possibly returning a default value or null
+                return null;
+            }
+        },
         async mintToken() {
             // Check if the wallet is connected; if not, the wallet modal should manage the connection process
             if (!this.isWalletConnected) {
@@ -148,6 +165,8 @@ export default {
                 }
                 const contract = new ethers.Contract(this.contractAddress, entropyAbi, signer);
                 const uri = await this.getTokenUri();
+                const entropy = await this.getEntropy(uri);
+                const uniswapUrl = `https://app.uniswap.org/explore/tokens/polygon/0xa464a1c3486a1af3111e6058cc7b302771c2a9de`;
                 try {
                     let tx = await contract.saveSession(signer.getAddress(), uri);
                     let receipt = await tx.wait();
@@ -155,7 +174,7 @@ export default {
 
                     // Etherscan URL formation (replace with the appropriate network URL if needed)
                     let etherscanUrl = `${etherscanPrefix}${receipt.transactionHash}`;
-                    this.displayContent = `Transaction successful! <a href="${etherscanUrl}" target="_blank">View on Blockchain scan</a>`;
+                    this.displayContent = `Transaction successful! <a href="${etherscanUrl}" target="_blank">View on Blockchain scan</a> \n You will get ${entropy} ENTROPY token <a href="${uniswapUrl}" target="_blank">Trade on Uniswap</a>` ;
                 } catch (error) {
                     console.error('Error minting token:', error);
                     alert('Failed to mint token. Please try again.');
@@ -339,7 +358,7 @@ export default {
     },
 };
 </script>
-  
+
 <style scoped>
 /* Main container styling */
 .context-pilot {

@@ -20,10 +20,10 @@ if (process.env.NODE_ENV === 'production') {
   global.streamurl = "https://main-wjaxre4ena-uc.a.run.app/streamchat";
   console.log("in production");
 } else {
-  axios.defaults.baseURL = 'http://10.0.0.43:5000/';   // Set base URL
+  axios.defaults.baseURL = 'http://10.0.0.42:5000/';   // Set base URL
   global.axios = axios;    // Globalize axios
   console.log("in test");
-  global.streamurl = "http://10.0.0.43:5000/streamchat";
+  global.streamurl = "http://10.0.0.42:5000/streamchat";
 }
 
 global.isInitiated = false
