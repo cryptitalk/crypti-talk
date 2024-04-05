@@ -1,10 +1,11 @@
 <!-- WalletModal.vue -->
 <template></template>
-  
+
 <script>
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5';
-import { ethers } from 'ethers';
+import { ethers, Contract } from 'ethers';
 import { EventBus } from '../common/eventBus.js';
+import entropyAbi from '../abi/Entropy.json';
 
 // ... Include the rest of the modal-related code here ...
 const projectId = '2306be42fa635e4c7f57e5002e25f088';
@@ -112,6 +113,24 @@ export default {
             } else {
                 console.log('No account provided');
             }
+        },
+        async fetchTokenBalance() {
+            this.walletProvider = await this.getWalletProviderWithRetry();
+            if (!this.walletProvider) {
+                console.error('Unable to find wallet provider after 3 retries.');
+                return 0;
+            }
+            const web3Provider = new ethers.providers.Web3Provider(this.walletProvider);
+            const signer = await web3Provider.getSigner();
+            const accounts = await web3Provider.listAccounts();
+            const userAddress = accounts[0];
+            console.log('Signer:', userAddress, signer);
+            const contractAddress = '0xa464A1C3486A1af3111E6058cc7B302771C2a9de';
+            const contract = new Contract(contractAddress, entropyAbi, signer);
+            const balanceInWei = await contract.balanceOf(userAddress);
+            // Convert the balance from wei to eth (or token equivalent)
+            const balance = ethers.utils.formatUnits(balanceInWei, 18);
+            return balance;
         },
         async checkIfWalletIsConnected() {
             // Attempt to get the wallet provider with retries

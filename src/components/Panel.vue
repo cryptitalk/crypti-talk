@@ -22,7 +22,16 @@
                     <img src="../assets/icon1.png" alt="look">
                 </div>
                 <div class="text">
-                    <span>ENTROPY</span>
+                    <span>Entropy</span>
+                </div>
+            </div>
+
+            <div class="con_item" @click="handleAirdropClick">
+                <div class="img">
+                    <img src="../assets/icon1.png" alt="look">
+                </div>
+                <div class="text">
+                    <span>Airdrop</span>
                 </div>
             </div>
             
@@ -79,7 +88,8 @@
             </context-pilot>
             <PostModal v-if="isPostModalVisible" @close="hidePostModal" @save-changes="handleSaveProfileChanges">
             </PostModal>
-            <EntropyPopup :visible="isEntropyPopupVisible" :data="entropyData" @close="isEntropyPopupVisible = false" />
+            <EntropyPopup :visible="isEntropyPopupVisible" @close="isEntropyPopupVisible = false" />
+            <AirdropPopup :visible="isAirdropPopupVisible" :data="airdropData" @close="isAirdropPopupVisible = false" />
         </div>
     </div>
 </template>
@@ -90,6 +100,7 @@ import FollowModal from "./FollowModal.vue";
 import PostModal from "./PostModal.vue";
 import EntropyPopup from './EntropyPopup.vue';
 import ContextPilot from './ContextPilot.vue';
+import AirdropPopup from './AirdropPopup.vue';
 
 export default {
     data() {
@@ -104,9 +115,10 @@ export default {
             isEditProfileModalVisible: false,
             isFollowModalVisible: false,
             isPostModalVisible: false,
+            isAirdropPopupVisible: false,
             isEntropyPopupVisible: false,
             isCtxPilotVisible: false,
-            entropyData: {},
+            airdropData: {},
         }
     },
     components: {
@@ -114,6 +126,7 @@ export default {
         FollowModal,
         PostModal,
         EntropyPopup,
+        AirdropPopup,
         'context-pilot': ContextPilot,
     },
     mounted() {
@@ -127,9 +140,9 @@ export default {
         });
     },
     methods: {
-        async handleEntropyClick() {
+        async handleAirdropClick() {
             await this.fetchUserData();
-            this.entropyData = {
+            this.airdropData = {
                 user: global.connectedAccount,
                 browsing_point: this.user.browsing,
                 search_point: this.user.search,
@@ -142,6 +155,9 @@ export default {
                 bsc_nft_cnt: this.user.bsc_nft_cnt,
                 matic_nft_cnt: this.user.matic_nft_cnt,
             };
+            this.isAirdropPopupVisible = true;
+        },
+        async handleEntropyClick() {
             this.isEntropyPopupVisible = true;
         },
         showToast(message) {
