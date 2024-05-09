@@ -215,14 +215,14 @@ export default {
             let funcs = this.$store.getters.selectedItemsIdFunc.split(',');
             if (funcs.length > 0 && funcs[0] !== "") {
                 return {
-                    model: "gpt",
+                    model: "gpt-3.5-turbo",
                     function_id: funcs,
                     message: chatSessionGPT
                 }
             }
             // chat only
             return {
-                model: "gpt",
+                model: "gpt-3.5-turbo",
                 message: chatSessionGPT
             }
         },

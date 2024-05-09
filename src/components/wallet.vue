@@ -115,6 +115,7 @@ export default {
             }
         },
         async fetchTokenBalance() {
+            await this.checkIfWalletIsConnected();
             this.walletProvider = await this.getWalletProviderWithRetry();
             if (!this.walletProvider) {
                 console.error('Unable to find wallet provider after 3 retries.');
